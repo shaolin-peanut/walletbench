@@ -30,17 +30,17 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```
 src/
   app/               # Next.js App Router
-    api/             # API routes
-    page.tsx         # Landing
-    layout.tsx       # Root layout
-    globals.css      # Tailwind entry
   lib/
     types.ts         # §10 TypeScript contracts
-    db.ts            # SQLite client
-    stripe.ts        # Stripe test client
     fixtures.ts      # Mock data (Surface builds on this)
-    utils.ts         # Tailwind helper
+docs/
+  source/surface/route-map.md  # Page-by-page journey and fixture-vs-API status
 ```
+
+## Docs
+
+- `docs/README.md` — Lane overview.
+- `docs/source/surface/route-map.md` — 📋 Route map, user story, §10 contract coverage, and I1 data-source plan.
 
 ## Build tasks
 
