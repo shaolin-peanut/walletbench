@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "capture-demo": "node scripts/capture-demo.js",
-    "validate-types": "npx tsx scripts/validate-types.ts"
+    "validate-types": "npx tsx scripts/validate-types.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "better-sqlite3": "^9.4.0",
