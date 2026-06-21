@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { fixtures } from "@/lib/fixtures";
 import type { Run, TraceEvent } from "@/lib/types";
-import { ChevronDown, ChevronRight, Clock, Wallet, Activity } from "lucide-react";
+import { ChevronDown, ChevronRight, Clock, Wallet, Activity, ReceiptText } from "lucide-react";
 
 const TYPE_COLORS: Record<string, string> = {
   decision: "bg-blue-100 text-blue-700 border-blue-300",
@@ -133,6 +134,13 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
               <Clock className="mr-1.5 h-3.5 w-3.5 text-gray-500" />
               {elapsedTime(run.started_at, run.ended_at, run.live)}
             </span>
+            <Link
+              href={`/runs/${run.id}/receipts`}
+              className="inline-flex items-center rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1 font-semibold text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100"
+            >
+              <ReceiptText className="mr-1.5 h-3.5 w-3.5" />
+              View Receipts
+            </Link>
           </div>
         </div>
       </div>
