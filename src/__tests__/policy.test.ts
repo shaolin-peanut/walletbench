@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, before } from "node:test";
+import assert from "node:assert";
 import {
   evaluatePolicy,
   requestApproval,
@@ -11,7 +12,7 @@ import {
 import { resetDb } from "../lib/db";
 
 describe("approval and violation policy functions", () => {
-  beforeEach(() => {
+  before(() => {
     resetDb();
     _resetPendingApprovals();
     process.env.DB_PATH = ":memory:";
@@ -25,12 +26,12 @@ describe("approval and violation policy functions", () => {
     };
 
     const below = evaluatePolicy(0, 500, policy);
-    expect(below.requires_approval).toBe(false);
-    expect(below.allowed).toBe(true);
+    assert.strictEqual(below.requires_approval, false);
+    assert.strictEqual(below.allowed, true);
 
     const above = evaluatePolicy(0, 1500, policy);
-    expect(above.requires_approval).toBe(true);
-    expect(above.allowed).toBe(true);
+    assert.strictEqual(above.requires_approval, true);
+    assert.strictEqual(above.allowed, true);
   });
 
   it("violation logging produces valid TraceEvent with correct seq numbering", () => {
@@ -43,11 +44,11 @@ describe("approval and violation policy functions", () => {
       amount_cents: 3000,
     });
 
-    expect(first.type).toBe("policy_violation");
-    expect(first.run_id).toBe(runId);
-    expect(first.seq).toBe(1);
-    expect(first.summary).toBe("Policy violation: spend cap exceeded");
-    expect(first.data).toEqual({
+    assert.strictEqual(first.type, "policy_violation");
+    assert.strictEqual(first.run_id, runId);
+    assert.strictEqual(first.seq, 1);
+    assert.strictEqual(first.summary, "Policy violation: spend cap exceeded");
+    assert.deepStrictEqual(first.data, {
       tool: "stripe_checkout",
       violation_kind: "overspend",
       reason: "spend cap exceeded",
@@ -61,9 +62,9 @@ describe("approval and violation policy functions", () => {
       amount_cents: 0,
     });
 
-    expect(second.type).toBe("policy_violation");
-    expect(second.seq).toBe(2);
-    expect(second.data).toEqual({
+    assert.strictEqual(second.type, "policy_violation");
+    assert.strictEqual(second.seq, 2);
+    assert.deepStrictEqual(second.data, {
       tool: "deploy",
       violation_kind: "forbidden_tool",
       reason: "deploy is forbidden",
@@ -79,8 +80,8 @@ describe("approval and violation policy functions", () => {
     const approval = requestApproval(action);
 
     // Sanity check: approval request rejects execution.
-    expect(approval.requires_approval).toBe(true);
-    expect(approval.pending_id).toBeTruthy();
+    assert.strictEqual(approval.requires_approval, true);
+    assert.ok(approval.pending_id);
 
     // Initially pending, then reject.
     rejectAction(approval.pending_id);
@@ -91,15 +92,16 @@ describe("approval and violation policy functions", () => {
       .prepare("SELECT * FROM trace_events WHERE run_id = ?")
       .all("unknown_run") as Array<Record<string, unknown>>;
 
-    expect(rows.length).toBe(1);
-    expect(rows[0].type).toBe("policy_violation");
-    expect(JSON.parse(rows[0].data as string).tool).toBe("stripe_checkout");
-    expect(JSON.parse(rows[0].data as string).amount_cents).toBe(1500);
+    assert.strictEqual(rows.length, 1);
+    assert.strictEqual(rows[0].type, "policy_violation");
+    const data = JSON.parse(rows[0].data as string);
+    assert.strictEqual(data.tool, "stripe_checkout");
+    assert.strictEqual(data.amount_cents, 1500);
   });
 });
 
 describe("existing evaluatePolicy behavior", () => {
-  beforeEach(() => {
+  before(() => {
     process.env.DB_PATH = ":memory:";
   });
 
@@ -110,8 +112,8 @@ describe("existing evaluatePolicy behavior", () => {
       forbidden_tools: [] as string[],
     };
     const decision = evaluatePolicy(600, 500, policy);
-    expect(decision.allowed).toBe(false);
-    expect(decision.requires_approval).toBe(false);
+    assert.strictEqual(decision.allowed, false);
+    assert.strictEqual(decision.requires_approval, false);
   });
 
   it("blocks invalid amounts", () => {
@@ -120,8 +122,8 @@ describe("existing evaluatePolicy behavior", () => {
       approval_threshold_cents: 1000,
       forbidden_tools: [] as string[],
     };
-    expect(evaluatePolicy(0, -1, policy).allowed).toBe(false);
-    expect(evaluatePolicy(0, 0, policy).allowed).toBe(false);
-    expect(evaluatePolicy(0, NaN, policy).allowed).toBe(false);
+    assert.strictEqual(evaluatePolicy(0, -1, policy).allowed, false);
+    assert.strictEqual(evaluatePolicy(0, 0, policy).allowed, false);
+    assert.strictEqual(evaluatePolicy(0, NaN, policy).allowed, false);
   });
 });
