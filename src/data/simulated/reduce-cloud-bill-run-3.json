@@ -1,0 +1,212 @@
+{
+  "run": {
+    "id": "reduce-cloud-bill-run-3",
+    "challenge_id": "reduce-cloud-bill",
+    "contestant_id": "eval-runner",
+    "status": "complete",
+    "started_at": "2026-06-21T18:57:12.320Z",
+    "ended_at": "2026-06-21T19:20:29.320Z",
+    "wallet": {
+      "start_cents": 2000,
+      "balance_cents": 509,
+      "currency": "usd"
+    },
+    "live": false
+  },
+  "traceEvents": [
+    {
+      "run_id": "reduce-cloud-bill-run-3",
+      "seq": 1,
+      "ts": "2026-06-21T18:57:12.320Z",
+      "type": "tool_call",
+      "summary": "Apply auto-scaling schedule",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-3",
+      "seq": 2,
+      "ts": "2026-06-21T18:58:45.453Z",
+      "type": "decision",
+      "summary": "Map out line items",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-3",
+      "seq": 3,
+      "ts": "2026-06-21T19:00:18.586Z",
+      "type": "tool_call",
+      "summary": "Compare reserved instances",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-3",
+      "seq": 4,
+      "ts": "2026-06-21T19:01:51.720Z",
+      "type": "artifact",
+      "summary": "Savings estimate verified",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-3",
+      "seq": 5,
+      "ts": "2026-06-21T19:03:24.853Z",
+      "type": "decision",
+      "summary": "Flag redundant long-term contracts",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-3",
+      "seq": 6,
+      "ts": "2026-06-21T19:04:57.986Z",
+      "type": "artifact",
+      "summary": "Final report rendered",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-3",
+      "seq": 7,
+      "ts": "2026-06-21T19:06:31.120Z",
+      "type": "tool_call",
+      "summary": "Compare reserved instances",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-3",
+      "seq": 8,
+      "ts": "2026-06-21T19:08:04.253Z",
+      "type": "artifact",
+      "summary": "Proposal CSV generated",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-3",
+      "seq": 9,
+      "ts": "2026-06-21T19:09:37.386Z",
+      "type": "tool_call",
+      "summary": "Export PDF",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-3",
+      "seq": 10,
+      "ts": "2026-06-21T19:11:10.520Z",
+      "type": "tool_call",
+      "summary": "Research discount tiers",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-3",
+      "seq": 11,
+      "ts": "2026-06-21T19:12:43.653Z",
+      "type": "tool_call",
+      "summary": "List invoice items",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-3",
+      "seq": 12,
+      "ts": "2026-06-21T19:14:16.786Z",
+      "type": "artifact",
+      "summary": "Savings estimate verified",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-3",
+      "seq": 13,
+      "ts": "2026-06-21T19:15:49.920Z",
+      "type": "tool_call",
+      "summary": "Export PDF",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-3",
+      "seq": 14,
+      "ts": "2026-06-21T19:17:23.053Z",
+      "type": "tool_call",
+      "summary": "Research discount tiers",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-3",
+      "seq": 15,
+      "ts": "2026-06-21T19:18:56.186Z",
+      "type": "artifact",
+      "summary": "Slides produced for ops",
+      "data": {
+        "result": {}
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "run_id": "reduce-cloud-bill-run-3",
+      "ts": "2026-06-21T19:20:29.320Z",
+      "kind": "payout",
+      "amount_cents": 746,
+      "currency": "usd",
+      "purpose": "Test-mode revenue",
+      "stripe_ref": "po_test_ec17494d",
+      "balance_after_cents": 2746
+    }
+  ],
+  "scoreResult": {
+    "run_id": "reduce-cloud-bill-run-3",
+    "challenge_id": "reduce-cloud-bill",
+    "contestant_id": "eval-runner",
+    "dimensions": {
+      "task_success": "partial",
+      "money_left_cents": 509,
+      "roi": -0.02,
+      "quality": 0.65,
+      "time_seconds": 1397,
+      "policy_violations": 0,
+      "auditability": 0.75
+    },
+    "total": 0.57,
+    "rank": 0
+  }
+}

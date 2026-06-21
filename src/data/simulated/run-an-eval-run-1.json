@@ -1,0 +1,252 @@
+{
+  "run": {
+    "id": "run-an-eval-run-1",
+    "challenge_id": "run-an-eval",
+    "contestant_id": "saas-builder",
+    "status": "complete",
+    "started_at": "2026-06-21T19:08:55.313Z",
+    "ended_at": "2026-06-21T19:20:29.313Z",
+    "wallet": {
+      "start_cents": 8000,
+      "balance_cents": 7840,
+      "currency": "usd"
+    },
+    "live": false
+  },
+  "traceEvents": [
+    {
+      "run_id": "run-an-eval-run-1",
+      "seq": 1,
+      "ts": "2026-06-21T19:08:55.313Z",
+      "type": "decision",
+      "summary": "Plan eval matrix",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-1",
+      "seq": 2,
+      "ts": "2026-06-21T19:09:38.688Z",
+      "type": "tool_call",
+      "summary": "Run second model inference",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-1",
+      "seq": 3,
+      "ts": "2026-06-21T19:10:22.063Z",
+      "type": "artifact",
+      "summary": "Summary report passed",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-1",
+      "seq": 4,
+      "ts": "2026-06-21T19:11:05.438Z",
+      "type": "tool_call",
+      "summary": "Run second model inference",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-1",
+      "seq": 5,
+      "ts": "2026-06-21T19:11:48.813Z",
+      "type": "artifact",
+      "summary": "Artifact produced step 15",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-1",
+      "seq": 6,
+      "ts": "2026-06-21T19:12:32.188Z",
+      "type": "spend",
+      "summary": "Charge $1.00 for compute runtime",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 300
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 300
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-1",
+      "seq": 7,
+      "ts": "2026-06-21T19:13:15.563Z",
+      "type": "artifact",
+      "summary": "Artifact produced step 15",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-1",
+      "seq": 8,
+      "ts": "2026-06-21T19:13:58.938Z",
+      "type": "tool_call",
+      "summary": "Fetch benchmark datasets",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-1",
+      "seq": 9,
+      "ts": "2026-06-21T19:14:42.313Z",
+      "type": "artifact",
+      "summary": "Scorecard JSON generated",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-1",
+      "seq": 10,
+      "ts": "2026-06-21T19:15:25.688Z",
+      "type": "artifact",
+      "summary": "Summary report passed",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-1",
+      "seq": 11,
+      "ts": "2026-06-21T19:16:09.063Z",
+      "type": "tool_call",
+      "summary": "Run second model inference",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-1",
+      "seq": 12,
+      "ts": "2026-06-21T19:16:52.438Z",
+      "type": "artifact",
+      "summary": "Artifact produced step 15",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-1",
+      "seq": 13,
+      "ts": "2026-06-21T19:17:35.813Z",
+      "type": "decision",
+      "summary": "Plan eval matrix",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-1",
+      "seq": 14,
+      "ts": "2026-06-21T19:18:19.188Z",
+      "type": "spend",
+      "summary": "Charge $1.00 for compute runtime",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 350
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 350
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-1",
+      "seq": 15,
+      "ts": "2026-06-21T19:19:02.563Z",
+      "type": "tool_call",
+      "summary": "Plot latency histograms",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-1",
+      "seq": 16,
+      "ts": "2026-06-21T19:19:45.938Z",
+      "type": "tool_call",
+      "summary": "Run second model inference",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "run_id": "run-an-eval-run-1",
+      "ts": "2026-06-21T19:12:32.188Z",
+      "kind": "charge",
+      "amount_cents": 300,
+      "currency": "usd",
+      "purpose": "compute runtime",
+      "stripe_ref": "cs_test_8aba89d3",
+      "balance_after_cents": 7700
+    },
+    {
+      "run_id": "run-an-eval-run-1",
+      "ts": "2026-06-21T19:14:42.314Z",
+      "kind": "refund",
+      "amount_cents": 300,
+      "currency": "usd",
+      "purpose": "Mid-run refund to recover scope",
+      "stripe_ref": "re_test_65c68c15",
+      "balance_after_cents": 8000
+    },
+    {
+      "run_id": "run-an-eval-run-1",
+      "ts": "2026-06-21T19:18:19.188Z",
+      "kind": "charge",
+      "amount_cents": 350,
+      "currency": "usd",
+      "purpose": "compute runtime",
+      "stripe_ref": "cs_test_0480df39",
+      "balance_after_cents": 7650
+    }
+  ],
+  "scoreResult": {
+    "run_id": "run-an-eval-run-1",
+    "challenge_id": "run-an-eval",
+    "contestant_id": "saas-builder",
+    "dimensions": {
+      "task_success": "pass",
+      "money_left_cents": 7840,
+      "roi": 0.7,
+      "quality": 0.56,
+      "time_seconds": 694,
+      "policy_violations": 0,
+      "auditability": 0.81
+    },
+    "total": 0.82,
+    "rank": 0
+  }
+}

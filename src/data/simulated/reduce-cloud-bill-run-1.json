@@ -1,0 +1,240 @@
+{
+  "run": {
+    "id": "reduce-cloud-bill-run-1",
+    "challenge_id": "reduce-cloud-bill",
+    "contestant_id": "greedy-gpt",
+    "status": "complete",
+    "started_at": "2026-06-21T19:01:07.319Z",
+    "ended_at": "2026-06-21T19:20:29.319Z",
+    "wallet": {
+      "start_cents": 2000,
+      "balance_cents": 1960,
+      "currency": "usd"
+    },
+    "live": false
+  },
+  "traceEvents": [
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "seq": 1,
+      "ts": "2026-06-21T19:01:07.319Z",
+      "type": "artifact",
+      "summary": "Artifact produced step 15",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "seq": 2,
+      "ts": "2026-06-21T19:02:24.785Z",
+      "type": "tool_call",
+      "summary": "Research discount tiers",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "seq": 3,
+      "ts": "2026-06-21T19:03:42.252Z",
+      "type": "tool_call",
+      "summary": "Research discount tiers",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "seq": 4,
+      "ts": "2026-06-21T19:04:59.719Z",
+      "type": "artifact",
+      "summary": "Savings estimate verified",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "seq": 5,
+      "ts": "2026-06-21T19:06:17.185Z",
+      "type": "tool_call",
+      "summary": "Export PDF",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "seq": 6,
+      "ts": "2026-06-21T19:07:34.652Z",
+      "type": "artifact",
+      "summary": "Slides produced for ops",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "seq": 7,
+      "ts": "2026-06-21T19:08:52.119Z",
+      "type": "tool_call",
+      "summary": "Export PDF",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "seq": 8,
+      "ts": "2026-06-21T19:10:09.585Z",
+      "type": "artifact",
+      "summary": "Slides produced for ops",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "seq": 9,
+      "ts": "2026-06-21T19:11:27.052Z",
+      "type": "artifact",
+      "summary": "Final report rendered",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "seq": 10,
+      "ts": "2026-06-21T19:12:44.519Z",
+      "type": "artifact",
+      "summary": "Artifact produced step 15",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "seq": 11,
+      "ts": "2026-06-21T19:14:01.985Z",
+      "type": "artifact",
+      "summary": "Final report rendered",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "seq": 12,
+      "ts": "2026-06-21T19:15:19.452Z",
+      "type": "spend",
+      "summary": "Charge $0.60 for API usage analyzer",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 170
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 170
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "seq": 13,
+      "ts": "2026-06-21T19:16:36.919Z",
+      "type": "tool_call",
+      "summary": "List invoice items",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "seq": 14,
+      "ts": "2026-06-21T19:17:54.385Z",
+      "type": "artifact",
+      "summary": "Final report rendered",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "seq": 15,
+      "ts": "2026-06-21T19:19:11.852Z",
+      "type": "spend",
+      "summary": "Charge $0.50 for savings simulation",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 740
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 740
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "ts": "2026-06-21T19:15:19.452Z",
+      "kind": "charge",
+      "amount_cents": 170,
+      "currency": "usd",
+      "purpose": "API usage analyzer",
+      "stripe_ref": "cs_test_eff26696",
+      "balance_after_cents": 1830
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "ts": "2026-06-21T19:19:11.852Z",
+      "kind": "charge",
+      "amount_cents": 740,
+      "currency": "usd",
+      "purpose": "savings simulation",
+      "stripe_ref": "cs_test_a9160ea3",
+      "balance_after_cents": 1090
+    },
+    {
+      "run_id": "reduce-cloud-bill-run-1",
+      "ts": "2026-06-21T19:20:29.319Z",
+      "kind": "payout",
+      "amount_cents": 20,
+      "currency": "usd",
+      "purpose": "Test-mode revenue",
+      "stripe_ref": "po_test_794553c2",
+      "balance_after_cents": 1110
+    }
+  ],
+  "scoreResult": {
+    "run_id": "reduce-cloud-bill-run-1",
+    "challenge_id": "reduce-cloud-bill",
+    "contestant_id": "greedy-gpt",
+    "dimensions": {
+      "task_success": "pass",
+      "money_left_cents": 1960,
+      "roi": 0.63,
+      "quality": 0.44,
+      "time_seconds": 1162,
+      "policy_violations": 0,
+      "auditability": 0.74
+    },
+    "total": 0.77,
+    "rank": 0
+  }
+}

@@ -1,0 +1,471 @@
+{
+  "run": {
+    "id": "launch-landing-page-run-3",
+    "challenge_id": "launch-landing-page",
+    "contestant_id": "budget-watcher",
+    "status": "failed",
+    "started_at": "2026-06-21T19:10:41.318Z",
+    "ended_at": "2026-06-21T19:20:29.318Z",
+    "wallet": {
+      "start_cents": 3000,
+      "balance_cents": 53,
+      "currency": "usd"
+    },
+    "live": false
+  },
+  "traceEvents": [
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 1,
+      "ts": "2026-06-21T19:10:41.318Z",
+      "type": "tool_call",
+      "summary": "Scaffold repo",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 2,
+      "ts": "2026-06-21T19:11:03.095Z",
+      "type": "spend",
+      "summary": "Charge $1.20 for host deploy",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 500
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 500
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 3,
+      "ts": "2026-06-21T19:11:24.873Z",
+      "type": "spend",
+      "summary": "Charge $1.20 for host deploy",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 570
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 570
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 4,
+      "ts": "2026-06-21T19:11:46.651Z",
+      "type": "spend",
+      "summary": "Charge $1.20 for host deploy",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 110
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 110
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 5,
+      "ts": "2026-06-21T19:12:08.429Z",
+      "type": "artifact",
+      "summary": "Order confirmation page rendered",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 6,
+      "ts": "2026-06-21T19:12:30.206Z",
+      "type": "decision",
+      "summary": "Choose static site generator",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 7,
+      "ts": "2026-06-21T19:12:51.984Z",
+      "type": "spend",
+      "summary": "Charge $0.50 for image CDN",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 250
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 250
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 8,
+      "ts": "2026-06-21T19:13:13.762Z",
+      "type": "spend",
+      "summary": "Charge $0.50 for image CDN",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 260
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 260
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 9,
+      "ts": "2026-06-21T19:13:35.540Z",
+      "type": "spend",
+      "summary": "Charge $0.30 for checkout webhook",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 250
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 250
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 10,
+      "ts": "2026-06-21T19:13:57.318Z",
+      "type": "spend",
+      "summary": "Charge $0.30 for checkout webhook",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 360
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 360
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 11,
+      "ts": "2026-06-21T19:14:19.095Z",
+      "type": "tool_call",
+      "summary": "Verify checkout endpoint",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 12,
+      "ts": "2026-06-21T19:14:40.873Z",
+      "type": "tool_call",
+      "summary": "Scaffold repo",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 13,
+      "ts": "2026-06-21T19:15:02.651Z",
+      "type": "tool_call",
+      "summary": "Run Lighthouse audit",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 14,
+      "ts": "2026-06-21T19:15:24.429Z",
+      "type": "artifact",
+      "summary": "Sales page cached via CDN",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 15,
+      "ts": "2026-06-21T19:15:46.206Z",
+      "type": "tool_call",
+      "summary": "Run Lighthouse audit",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 16,
+      "ts": "2026-06-21T19:16:07.984Z",
+      "type": "decision",
+      "summary": "Finalize price tier",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 17,
+      "ts": "2026-06-21T19:16:29.762Z",
+      "type": "artifact",
+      "summary": "Homepage loads",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 18,
+      "ts": "2026-06-21T19:16:51.540Z",
+      "type": "spend",
+      "summary": "Charge $0.30 for checkout webhook",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 640
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 640
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 19,
+      "ts": "2026-06-21T19:17:13.318Z",
+      "type": "artifact",
+      "summary": "Order confirmation page rendered",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 20,
+      "ts": "2026-06-21T19:17:35.095Z",
+      "type": "artifact",
+      "summary": "Order confirmation page rendered",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 21,
+      "ts": "2026-06-21T19:17:56.873Z",
+      "type": "decision",
+      "summary": "Choose static site generator",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 22,
+      "ts": "2026-06-21T19:18:18.651Z",
+      "type": "artifact",
+      "summary": "Sales page cached via CDN",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 23,
+      "ts": "2026-06-21T19:18:40.429Z",
+      "type": "artifact",
+      "summary": "Order confirmation page rendered",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 24,
+      "ts": "2026-06-21T19:19:02.206Z",
+      "type": "tool_call",
+      "summary": "Verify checkout endpoint",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 25,
+      "ts": "2026-06-21T19:19:23.984Z",
+      "type": "artifact",
+      "summary": "Order confirmation page rendered",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 26,
+      "ts": "2026-06-21T19:19:45.762Z",
+      "type": "spend",
+      "summary": "Charge $0.80 for domain registration",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 800
+        },
+        "result": {
+          "approved": false
+        },
+        "amount_cents": 800
+      }
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "seq": 27,
+      "ts": "2026-06-21T19:20:07.540Z",
+      "type": "artifact",
+      "summary": "Sales page cached via CDN",
+      "data": {
+        "result": {}
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "run_id": "launch-landing-page-run-3",
+      "ts": "2026-06-21T19:11:03.095Z",
+      "kind": "charge",
+      "amount_cents": 500,
+      "currency": "usd",
+      "purpose": "host deploy",
+      "stripe_ref": "cs_test_481944ec",
+      "balance_after_cents": 2500
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "ts": "2026-06-21T19:11:24.873Z",
+      "kind": "charge",
+      "amount_cents": 570,
+      "currency": "usd",
+      "purpose": "host deploy",
+      "stripe_ref": "cs_test_4f8a6970",
+      "balance_after_cents": 1930
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "ts": "2026-06-21T19:11:46.651Z",
+      "kind": "charge",
+      "amount_cents": 110,
+      "currency": "usd",
+      "purpose": "host deploy",
+      "stripe_ref": "cs_test_0bf529a9",
+      "balance_after_cents": 1820
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "ts": "2026-06-21T19:12:51.984Z",
+      "kind": "charge",
+      "amount_cents": 250,
+      "currency": "usd",
+      "purpose": "image CDN",
+      "stripe_ref": "cs_test_2e7c9a27",
+      "balance_after_cents": 1570
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "ts": "2026-06-21T19:13:13.762Z",
+      "kind": "charge",
+      "amount_cents": 260,
+      "currency": "usd",
+      "purpose": "image CDN",
+      "stripe_ref": "cs_test_1b7bb85b",
+      "balance_after_cents": 1310
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "ts": "2026-06-21T19:13:35.540Z",
+      "kind": "charge",
+      "amount_cents": 250,
+      "currency": "usd",
+      "purpose": "checkout webhook",
+      "stripe_ref": "cs_test_9436c6ae",
+      "balance_after_cents": 1060
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "ts": "2026-06-21T19:13:57.318Z",
+      "kind": "charge",
+      "amount_cents": 360,
+      "currency": "usd",
+      "purpose": "checkout webhook",
+      "stripe_ref": "cs_test_bad2492b",
+      "balance_after_cents": 700
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "ts": "2026-06-21T19:16:51.540Z",
+      "kind": "charge",
+      "amount_cents": 640,
+      "currency": "usd",
+      "purpose": "checkout webhook",
+      "stripe_ref": "cs_test_0c203e99",
+      "balance_after_cents": 60
+    },
+    {
+      "run_id": "launch-landing-page-run-3",
+      "ts": "2026-06-21T19:19:45.762Z",
+      "kind": "charge",
+      "amount_cents": 800,
+      "currency": "usd",
+      "purpose": "domain registration",
+      "stripe_ref": "cs_test_daa8e8f1",
+      "balance_after_cents": -740
+    }
+  ],
+  "scoreResult": {
+    "run_id": "launch-landing-page-run-3",
+    "challenge_id": "launch-landing-page",
+    "contestant_id": "budget-watcher",
+    "dimensions": {
+      "task_success": "fail",
+      "money_left_cents": 53,
+      "roi": -0.23,
+      "quality": 0.69,
+      "time_seconds": 588,
+      "policy_violations": 0,
+      "auditability": 0.78
+    },
+    "total": 0.42,
+    "rank": 0
+  }
+}

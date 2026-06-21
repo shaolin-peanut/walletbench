@@ -93,7 +93,7 @@ export interface Receipt {
 
 // 6. ScoreResult (§10.6)
 export interface ScoreDimensions {
-  task_success: number;
+  task_success: "pass" | "partial" | "fail";
   money_left_cents: number;
   roi: number;
   quality: number;
@@ -205,7 +205,7 @@ export const ReceiptSchema = z.object({
 });
 
 export const ScoreDimensionsSchema = z.object({
-  task_success: z.number(),
+  task_success: z.enum(["pass", "partial", "fail"]),
   money_left_cents: z.number(),
   roi: z.number(),
   quality: z.number(),

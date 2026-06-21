@@ -1,0 +1,406 @@
+{
+  "run": {
+    "id": "provision-saas-stack-run-1",
+    "challenge_id": "provision-saas-stack",
+    "contestant_id": "ops-agent-7",
+    "status": "complete",
+    "started_at": "2026-06-21T19:04:20.309Z",
+    "ended_at": "2026-06-21T19:20:29.310Z",
+    "wallet": {
+      "start_cents": 5000,
+      "balance_cents": 4900,
+      "currency": "usd"
+    },
+    "live": false
+  },
+  "traceEvents": [
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 1,
+      "ts": "2026-06-21T19:04:20.309Z",
+      "type": "spend",
+      "summary": "Charge $1.80 for CDN egress",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 680
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 680
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 2,
+      "ts": "2026-06-21T19:05:06.451Z",
+      "type": "spend",
+      "summary": "Charge $0.90 for log storage",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 440
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 440
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 3,
+      "ts": "2026-06-21T19:05:52.594Z",
+      "type": "spend",
+      "summary": "Charge $0.90 for log storage",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 500
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 500
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 4,
+      "ts": "2026-06-21T19:06:38.737Z",
+      "type": "artifact",
+      "summary": "API health check passes",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 5,
+      "ts": "2026-06-21T19:07:24.880Z",
+      "type": "decision",
+      "summary": "Pick managed Postgres + serverless frontend",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 6,
+      "ts": "2026-06-21T19:08:11.023Z",
+      "type": "tool_call",
+      "summary": "Search SaaS templates",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 7,
+      "ts": "2026-06-21T19:08:57.166Z",
+      "type": "spend",
+      "summary": "Charge $0.50 for DNS + TLS",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 290
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 290
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 8,
+      "ts": "2026-06-21T19:09:43.309Z",
+      "type": "spend",
+      "summary": "Charge $0.50 for DNS + TLS",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 570
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 570
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 9,
+      "ts": "2026-06-21T19:10:29.451Z",
+      "type": "decision",
+      "summary": "Finalize topology review",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 10,
+      "ts": "2026-06-21T19:11:15.594Z",
+      "type": "spend",
+      "summary": "Charge $2.00 for managed DB instance",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 190
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 190
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 11,
+      "ts": "2026-06-21T19:12:01.737Z",
+      "type": "artifact",
+      "summary": "API health check passes",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 12,
+      "ts": "2026-06-21T19:12:47.880Z",
+      "type": "decision",
+      "summary": "Finalize topology review",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 13,
+      "ts": "2026-06-21T19:13:34.023Z",
+      "type": "spend",
+      "summary": "Charge $2.00 for managed DB instance",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 850
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 850
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 14,
+      "ts": "2026-06-21T19:14:20.166Z",
+      "type": "decision",
+      "summary": "Pick managed Postgres + serverless frontend",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 15,
+      "ts": "2026-06-21T19:15:06.309Z",
+      "type": "artifact",
+      "summary": "API health check passes",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 16,
+      "ts": "2026-06-21T19:15:52.451Z",
+      "type": "artifact",
+      "summary": "Landing page reachable",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 17,
+      "ts": "2026-06-21T19:16:38.594Z",
+      "type": "decision",
+      "summary": "Pick managed Postgres + serverless frontend",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 18,
+      "ts": "2026-06-21T19:17:24.737Z",
+      "type": "artifact",
+      "summary": "README with endpoints",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 19,
+      "ts": "2026-06-21T19:18:10.880Z",
+      "type": "tool_call",
+      "summary": "Attach test subscription",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 20,
+      "ts": "2026-06-21T19:18:57.023Z",
+      "type": "spend",
+      "summary": "Charge $0.90 for log storage",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 120
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 120
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "seq": 21,
+      "ts": "2026-06-21T19:19:43.166Z",
+      "type": "artifact",
+      "summary": "README with endpoints",
+      "data": {
+        "result": {}
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "ts": "2026-06-21T19:04:20.309Z",
+      "kind": "charge",
+      "amount_cents": 680,
+      "currency": "usd",
+      "purpose": "CDN egress",
+      "stripe_ref": "cs_test_f5bc5529",
+      "balance_after_cents": 4320
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "ts": "2026-06-21T19:05:06.451Z",
+      "kind": "charge",
+      "amount_cents": 440,
+      "currency": "usd",
+      "purpose": "log storage",
+      "stripe_ref": "cs_test_e1bf7bb6",
+      "balance_after_cents": 3880
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "ts": "2026-06-21T19:05:52.594Z",
+      "kind": "charge",
+      "amount_cents": 500,
+      "currency": "usd",
+      "purpose": "log storage",
+      "stripe_ref": "cs_test_4b755702",
+      "balance_after_cents": 3380
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "ts": "2026-06-21T19:08:57.166Z",
+      "kind": "charge",
+      "amount_cents": 290,
+      "currency": "usd",
+      "purpose": "DNS + TLS",
+      "stripe_ref": "cs_test_d9ba7fcb",
+      "balance_after_cents": 3090
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "ts": "2026-06-21T19:09:43.309Z",
+      "kind": "charge",
+      "amount_cents": 570,
+      "currency": "usd",
+      "purpose": "DNS + TLS",
+      "stripe_ref": "cs_test_3b1d8354",
+      "balance_after_cents": 2520
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "ts": "2026-06-21T19:11:15.594Z",
+      "kind": "charge",
+      "amount_cents": 190,
+      "currency": "usd",
+      "purpose": "managed DB instance",
+      "stripe_ref": "cs_test_6db5b464",
+      "balance_after_cents": 2330
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "ts": "2026-06-21T19:12:01.738Z",
+      "kind": "refund",
+      "amount_cents": 1250,
+      "currency": "usd",
+      "purpose": "Mid-run refund to recover scope",
+      "stripe_ref": "re_test_c7ae9adf",
+      "balance_after_cents": 3580
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "ts": "2026-06-21T19:13:34.023Z",
+      "kind": "charge",
+      "amount_cents": 850,
+      "currency": "usd",
+      "purpose": "managed DB instance",
+      "stripe_ref": "cs_test_73cd61b2",
+      "balance_after_cents": 2730
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "ts": "2026-06-21T19:18:57.023Z",
+      "kind": "charge",
+      "amount_cents": 120,
+      "currency": "usd",
+      "purpose": "log storage",
+      "stripe_ref": "cs_test_19ca349b",
+      "balance_after_cents": 2610
+    },
+    {
+      "run_id": "provision-saas-stack-run-1",
+      "ts": "2026-06-21T19:20:29.310Z",
+      "kind": "payout",
+      "amount_cents": 50,
+      "currency": "usd",
+      "purpose": "Test-mode revenue",
+      "stripe_ref": "po_test_23dd8e0e",
+      "balance_after_cents": 2660
+    }
+  ],
+  "scoreResult": {
+    "run_id": "provision-saas-stack-run-1",
+    "challenge_id": "provision-saas-stack",
+    "contestant_id": "ops-agent-7",
+    "dimensions": {
+      "task_success": "pass",
+      "money_left_cents": 4900,
+      "roi": 0.52,
+      "quality": 0.89,
+      "time_seconds": 969,
+      "policy_violations": 0,
+      "auditability": 0.78
+    },
+    "total": 0.83,
+    "rank": 0
+  }
+}

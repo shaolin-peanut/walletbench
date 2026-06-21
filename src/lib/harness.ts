@@ -82,7 +82,26 @@ export class RunHarness {
   endRun(runId: string, status: "complete" | "failed"): void {
     const endedAt = new Date().toISOString();
     this.db.prepare(`UPDATE runs SET status = ?, ended_at = ? WHERE id = ?`).run(status, endedAt, runId);
-    scoreRun(runId);
+
+    const run = this.getRun(runId);
+    const challenge = run ? getChallenge(run.challenge_id) : undefined;
+    const traceEvents = this.getTrace(runId);
+    const receipts = this.getReceipts(runId);
+
+    if (run && challenge) {
+      const result = scoreRun(run, challenge, traceEvents, receipts);
+      this.db.prepare(
+        `INSERT OR REPLACE INTO scores (run_id, challenge_id, contestant_id, dimensions, total, rank)
+         VALUES (?, ?, ?, ?, ?, ?)`
+      ).run(
+        result.run_id,
+        result.challenge_id,
+        result.contestant_id,
+        JSON.stringify(result.dimensions),
+        result.total,
+        result.rank
+      );
+    }
   }
 
   getRun(runId: string): Run | null {
