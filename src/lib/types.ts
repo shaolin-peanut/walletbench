@@ -1,93 +1,41 @@
-/**
- * §10 TypeScript contracts — stub for S3 to populate.
- * Every schema from the build brief goes here.
- */
+// §10 TypeScript contracts
+// S3 will populate this file with exact schemas from the build brief.
 
 export interface Contestant {
   id: string;
   name: string;
-  avatarUrl?: string;
-  strategyDescription?: string;
+  strategy: string;
 }
 
-export interface Wallet {
-  contestantId: string;
-  startCents: number;
-  balanceCents: number;
-}
-
-export interface Policy {
-  contestantId: string;
-  spendCapCents: number;
-  allowlist: string[]; // merchant IDs
-  requireApprovalAboveCents: number;
-}
-
-export interface Goal {
-  contestantId: string;
-  type: "earn" | "spend" | "save";
-  targetCents: number;
-  description: string;
-}
-
-export interface Challenge {
+export interface Run {
   id: string;
-  name: string;
-  description: string;
-  durationMinutes: number;
-  initialBalanceCents: number;
-  goals: Goal[];
-  policies: Policy[];
-}
-
-export interface TraceEvent {
-  id: string;
-  runId: string;
-  timestamp: string; // ISO 8601
-  type: "action" | "receipt" | "policy_violation" | "milestone";
-  payload: Record<string, unknown>;
+  contestantId: string;
+  challengeId: string;
+  status: "queued" | "running" | "completed" | "failed";
+  startedAt: string;
+  completedAt?: string;
 }
 
 export interface Receipt {
   id: string;
   runId: string;
-  contestantId: string;
   type: "charge" | "payout" | "refund";
   amountCents: number;
-  merchantId?: string;
-  description?: string;
+  purpose: string;
   stripeRef?: string;
   createdAt: string;
 }
 
-export interface Run {
+export interface TraceEvent {
   id: string;
-  challengeId: string;
-  contestantId: string;
-  status: "pending" | "running" | "completed" | "failed";
-  startedAt?: string;
-  endedAt?: string;
-  finalBalanceCents?: number;
-  score?: number;
-}
-
-export interface LeaderboardEntry {
   runId: string;
-  contestantId: string;
-  contestantName: string;
-  finalBalanceCents: number;
-  score: number;
-  rank: number;
+  eventType: string;
+  payload: Record<string, unknown>;
+  timestamp: string;
 }
 
-export interface ScoringDimension {
-  name: string;
-  weight: number;
-  value: number;
-}
-
-export interface ScoreBreakdown {
-  runId: string;
-  total: number;
-  dimensions: ScoringDimension[];
+export interface Policy {
+  maxSpendCents: number;
+  allowedCategories: string[];
+  requireApprovalAboveCents: number;
 }

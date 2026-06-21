@@ -1,19 +1,40 @@
-/**
- * Mock fixtures for every §10 schema — S3 will populate with real data.
- * These allow Surface (U1–U4) to build views before Engine is live.
- */
-import { Contestant, Challenge, Run, TraceEvent, Receipt, LeaderboardEntry, ScoreBreakdown } from "./types";
+import { Contestant, Run, Receipt, TraceEvent } from "./types";
 
-export const fixtures = {
-  contestants: [] as Contestant[],
-  challenges: [] as Challenge[],
-  runs: [] as Run[],
-  traces: [] as TraceEvent[],
-  receipts: [] as Receipt[],
-  leaderboard: [] as LeaderboardEntry[],
-  scores: [] as ScoreBreakdown[],
-};
+// Mock fixtures for S3 — replace with generated data from build brief §10
+export const mockContestants: Contestant[] = [
+  { id: "c-001", name: "Alpha", strategy: "aggressive" },
+  { id: "c-002", name: "Beta", strategy: "conservative" },
+  { id: "c-003", name: "Gamma", strategy: "balanced" },
+];
 
-// S3: fill these arrays with realistic mock data
-// Example:
-// fixtures.contestants.push({ id: "c1", name: "Alpha" });
+export const mockRuns: Run[] = [
+  {
+    id: "r-001",
+    contestantId: "c-001",
+    challengeId: "fund-yourself",
+    status: "completed",
+    startedAt: new Date().toISOString(),
+    completedAt: new Date().toISOString(),
+  },
+];
+
+export const mockReceipts: Receipt[] = [
+  {
+    id: "rcpt-001",
+    runId: "r-001",
+    type: "charge",
+    amountCents: 2500,
+    purpose: "Initial budget",
+    createdAt: new Date().toISOString(),
+  },
+];
+
+export const mockTraceEvents: TraceEvent[] = [
+  {
+    id: "evt-001",
+    runId: "r-001",
+    eventType: "challenge.started",
+    payload: { budget: 2500 },
+    timestamp: new Date().toISOString(),
+  },
+];

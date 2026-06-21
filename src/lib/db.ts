@@ -1,16 +1,12 @@
-/**
- * SQLite database client stub — S2 scaffold.
- * S3+ will flesh out schema + migrations.
- */
 import Database from "better-sqlite3";
 
-const dbPath = process.env.DATABASE_URL?.replace("file:", "") || "./walletbench.db";
+const DB_PATH = process.env.DB_PATH || "./walletbench.db";
 
 let db: Database.Database | null = null;
 
 export function getDb(): Database.Database {
   if (!db) {
-    db = new Database(dbPath);
+    db = new Database(DB_PATH);
     db.pragma("journal_mode = WAL");
   }
   return db;

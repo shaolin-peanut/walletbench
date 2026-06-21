@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "WalletBench",
-  description: "Agent finance arena — watch wallets compete",
+  description: "Economic evaluation layer for autonomous agents",
 };
 
 export default function RootLayout({
@@ -13,9 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased bg-background text-foreground">
-        {children}
-      </body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }
