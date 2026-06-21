@@ -1,32 +1,41 @@
 # Reviewer checklist
 
-Use this before any lane is marked Done.
+Gate before any lane reaches Done.
 
 ## Contracts
 
-- [ ] Every JSON body returned by an API route validates against the corresponding Zod schema in `src/lib/types.ts`.
-- [ ] No field names diverge from §10 (check both TS interfaces and the brief).
+- [ ] `npm run validate-types` passes (7/7 §10 types).
+- [ ] API route responses match the TS interfaces in `src/lib/types.ts` (field names and casing identical to §10).
+- [ ] New fixtures or seed data parse against the corresponding Zod schema.
 
 ## Engine
 
-- [ ] Policy engine rejects a charge that would exceed the spend cap.
-- [ ] Wallet emits a `Receipt` for every Stripe-test transaction.
-- [ ] Run harness produces a `Run` and a stream of `TraceEvent`s.
+- [ ] `tests/policy-integration.test.ts` passes (6/6): over-cap rejects, forbidden-tool rejects, approval-threshold gates, exact-cap rejects.
+- [ ] `tests/wallet.test.ts` passes (6/6): forbidden tool blocked before Stripe call, threshold requires approval, approved pending executes, rejected pending removes.
+- [ ] Run data uses `Run`, `TraceEvent`, and `Receipt` shapes from §10.
 
 ## Surface
 
-- [ ] Leaderboard renders `ScoreResult` rows and is sortable.
-- [ ] Receipts gallery renders `Receipt` items with amount + purpose.
-- [ ] Trace timeline shows interleaved events in `seq` order.
+- [ ] `/leaderboard` renders `ScoreResult` rows and is sortable on: rank, contestant name, ROI, money left, policy violations, total score.
+- [ ] `/runs/[id]` trace timeline renders all §10.4 event types (`decision`, `tool_call`, `spend`, `artifact`, `policy_violation`) in `seq` order.
+- [ ] `/runs/[id]/receipts` renders `Receipt` cards showing amount, purpose, stripe_ref, and balance.
 
 ## Integration
 
-- [ ] Health endpoint returns 200.
-- [ ] End-to-end: create a run → see it on the leaderboard → view its trace + receipts.
-- [ ] Fund Yourself challenge completes net-positive in Stripe test mode and produces ≥1 receipt.
-
-## Tests
-
+- [ ] `curl -s http://localhost:3000/api/health` returns `{ "status": "ok", "service": "walletbench" }`.
 - [ ] `npm run build` passes.
-- [ ] `npm test` passes.
-- [ ] `npx tsx scripts/wb-score.ts demo/fixtures/alpha-seed.json` produces a deterministic score.
+- [ ] `npm test` passes (18/18).
+- [ ] `npx tsx scripts/wb-score.ts demo/fixtures/alpha-seed.json` completes and prints a score.
+- [ ] All six API routes resolve without 500 during local smoke test:
+  - `GET /api/challenges`
+  - `GET /api/health`
+  - `GET /api/leaderboard?challenge_id=fund-yourself`
+  - `GET /api/receipts?run_id=run_001`
+  - `GET /api/runs`
+  - `POST /api/webhooks/stripe` (returns `{ received: true }`)
+
+## Seam / Endpoint checklist
+
+- [ ] No new `src/app/api/**/route.ts` introduced without a corresponding type/interface in `src/lib/types.ts`.
+- [ ] Any new UI page under `src/app/` that consumes API data has a matching API route listed above.
+- [ ] If a new demuxed subdirectory exists under `src/app/runs/[id]/`, it is listed here and smoke-checked.
