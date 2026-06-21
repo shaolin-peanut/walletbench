@@ -1,149 +1,103 @@
-import { Policy, PolicyDecision, TraceEvent } from "./types";
-import { getDb, resetDb } from "./db";
+import type { Policy, PolicyDecision } from "./types";
 
-export class PolicyError extends Error {
-  decision: PolicyDecision;
-  constructor(decision: PolicyDecision) {
-    super(decision.reason);
-    this.decision = decision;
-    this.name = "PolicyError";
+export interface Action {
+  kind: string;
+  amount_cents: number;
+  tool?: string;
+}
+
+export class PolicyViolationError extends Error {
+  constructor(public reason: string) {
+    super(reason);
+    this.name = "PolicyViolationError";
   }
 }
+
+const REJECT_SPEND_CAP: PolicyDecision = {
+  allowed: false,
+  reason: "exceeds spend cap",
+  requires_approval: false,
+};
+
+const REJECT_TOOL_ALLOWLIST: PolicyDecision = {
+  allowed: false,
+  reason: "tool not in allowed list",
+  requires_approval: false,
+};
+
+const REJECT_FORBIDDEN_TOOL: PolicyDecision = {
+  allowed: false,
+  reason: "tool is forbidden",
+  requires_approval: false,
+};
+
+const PASS_WITHIN_CAP: PolicyDecision = {
+  allowed: true,
+  reason: "within cap",
+  requires_approval: false,
+};
 
 export function evaluatePolicy(
-  totalSpentCents: number,
-  amountCents: number,
-  policy: Policy
+  policy: Policy,
+  currentSpendCents: number,
+  action: Action,
 ): PolicyDecision {
-  if (!Number.isFinite(amountCents) || amountCents <= 0) {
-    return {
-      allowed: false,
-      reason: "Amount must be a positive integer",
-      requires_approval: false,
-    };
+  const projected = currentSpendCents + action.amount_cents;
+
+  if (projected >= policy.spend_cap_cents) {
+    return REJECT_SPEND_CAP;
   }
-  if (totalSpentCents + amountCents > policy.spend_cap_cents) {
-    return {
-      allowed: false,
-      reason: `Over cap: ${totalSpentCents + amountCents} exceeds ${policy.spend_cap_cents}`,
-      requires_approval: false,
-    };
+
+  if (
+    policy.allowed_tools !== undefined &&
+    action.tool !== undefined &&
+    !policy.allowed_tools.includes(action.tool)
+  ) {
+    return REJECT_TOOL_ALLOWLIST;
   }
+
+  if (action.tool !== undefined && policy.forbidden_tools.includes(action.tool)) {
+    return REJECT_FORBIDDEN_TOOL;
+  }
+
+  if (action.amount_cents < policy.approval_threshold_cents) {
+    return PASS_WITHIN_CAP;
+  }
+
   return {
     allowed: true,
-    reason:
-      amountCents >= policy.approval_threshold_cents
-        ? "Within cap, within approved tools"
-        : "Within cap",
-    requires_approval: amountCents >= policy.approval_threshold_cents,
-  };
-}
-
-// --- Approval gates + violation logging ---
-
-interface PendingApproval {
-  id: string;
-  action: unknown;
-  status: "pending" | "approved" | "rejected";
-  createdAt: Date;
-}
-
-const pendingApprovals = new Map<string, PendingApproval>();
-
-export function requestApproval(action: unknown): {
-  requires_approval: true;
-  reason: string;
-  pending_id: string;
-} {
-  const pending_id = `pending_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-  pendingApprovals.set(pending_id, {
-    id: pending_id,
-    action,
-    status: "pending",
-    createdAt: new Date(),
-  });
-  return {
+    reason: "above approval threshold",
     requires_approval: true,
-    reason: `Action requires approval: ${typeof action === "string" ? action : JSON.stringify(action)}`,
-    pending_id,
   };
 }
 
-export function approveAction(pending_id: string): boolean {
-  const approval = pendingApprovals.get(pending_id);
-  if (!approval) {
-    throw new Error(`Pending approval not found: ${pending_id}`);
-  }
-  if (approval.status !== "pending") {
-    throw new Error(`Pending approval ${pending_id} is already ${approval.status}`);
-  }
-  approval.status = "approved";
-  return true;
+// Approval lifecycle (in-memory, per-process)
+const _pendingApprovals = new Map<string, { action: Action; decision: PolicyDecision }>();
+let _nextApprovalId = 1;
+
+export function requestApproval(action: Action): string {
+  const id = `approval_${_nextApprovalId++}`;
+  _pendingApprovals.set(id, {
+    action,
+    decision: { allowed: true, reason: "awaiting approval", requires_approval: true },
+  });
+  return id;
 }
 
-export function rejectAction(pending_id: string): void {
-  const approval = pendingApprovals.get(pending_id);
-  if (!approval) {
-    throw new Error(`Pending approval not found: ${pending_id}`);
-  }
-  if (approval.status !== "pending") {
-    throw new Error(`Pending approval ${pending_id} is already ${approval.status}`);
-  }
-  approval.status = "rejected";
-
-  const kind = "rejected_approval";
-  const tool =
-    typeof approval.action === "object" &&
-    approval.action !== null &&
-    "tool" in approval.action
-      ? String((approval.action as Record<string, unknown>).tool)
-      : "unknown";
-  const reason = `Action ${pending_id} was rejected during approval gate`;
-  const amount_cents =
-    typeof approval.action === "object" &&
-    approval.action !== null &&
-    "amount_cents" in approval.action
-      ? Number((approval.action as Record<string, unknown>).amount_cents)
-      : 0;
-
-  logViolation("unknown_run", { kind, tool, reason, amount_cents });
+export function approveAction(actionId: string): PolicyDecision | null {
+  const entry = _pendingApprovals.get(actionId);
+  if (!entry) return null;
+  _pendingApprovals.delete(actionId);
+  return { allowed: true, reason: "approved", requires_approval: false };
 }
 
-export function logViolation(
-  runId: string,
-  violation: { kind: string; tool: string; reason: string; amount_cents: number }
-): TraceEvent {
-  const db = getDb();
-
-  const row = db
-    .prepare("SELECT MAX(seq) as max_seq FROM trace_events WHERE run_id = ?")
-    .get(runId) as { max_seq: number | null };
-  const seq = (row?.max_seq ?? 0) + 1;
-  const ts = new Date().toISOString();
-
-  const event: TraceEvent = {
-    run_id: runId,
-    seq,
-    ts,
-    type: "policy_violation",
-    summary: `Policy violation: ${violation.reason}`,
-    data: {
-      tool: violation.tool,
-      violation_kind: violation.kind,
-      reason: violation.reason,
-      amount_cents: violation.amount_cents,
-    },
-  };
-
-  db.prepare(
-    `INSERT INTO trace_events (run_id, seq, ts, type, summary, data)
-     VALUES (?, ?, ?, ?, ?, ?)`
-  ).run(runId, seq, ts, event.type, event.summary, JSON.stringify(event.data));
-
-  return event;
+export function rejectAction(actionId: string): PolicyDecision | null {
+  const entry = _pendingApprovals.get(actionId);
+  if (!entry) return null;
+  _pendingApprovals.delete(actionId);
+  return { allowed: false, reason: "rejected", requires_approval: false };
 }
 
-// Internal reset for tests only.
-export function _resetPendingApprovals() {
-  pendingApprovals.clear();
+export function hasPendingApproval(actionId: string): boolean {
+  return _pendingApprovals.has(actionId);
 }
