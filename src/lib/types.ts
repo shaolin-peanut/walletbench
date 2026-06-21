@@ -5,6 +5,7 @@ import { z } from "zod";
 export interface Policy {
   spend_cap_cents: number;
   approval_threshold_cents: number;
+  allowed_tools?: string[];
   forbidden_tools: string[];
 }
 
@@ -66,7 +67,7 @@ export interface TraceEvent {
   run_id: string;
   seq: number;
   ts: string;
-  type: "decision" | "tool_call" | "spend" | "artifact";
+  type: "decision" | "tool_call" | "spend" | "artifact" | "policy_violation";
   summary: string;
   data: {
     tool?: string;
@@ -118,6 +119,7 @@ export interface PolicyDecision {
 export const PolicySchema = z.object({
   spend_cap_cents: z.number(),
   approval_threshold_cents: z.number(),
+  allowed_tools: z.array(z.string()).optional(),
   forbidden_tools: z.array(z.string()),
 });
 
@@ -176,7 +178,7 @@ export const TraceEventSchema = z.object({
   run_id: z.string(),
   seq: z.number(),
   ts: z.string(),
-  type: z.enum(["decision", "tool_call", "spend", "artifact"]),
+  type: z.enum(["decision", "tool_call", "spend", "artifact", "policy_violation"]),
   summary: z.string(),
   data: z.object({
     tool: z.string().optional(),
