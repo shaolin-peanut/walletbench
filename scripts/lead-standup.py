@@ -103,7 +103,7 @@ def generate_report(tasks, problematic):
         report += f"- **ZAI**: {'✅ Available' if zai.get('available') else '❌ Rate Limited'}\n"
         report += f"- Last checked: {zai.get('last_check', 'unknown')}\n"
     else:
-        report += "- **ZAI**: Status unknown (run provider-manager.py)\n"
+        report += "- **ZAI**: glm-5.2 primary (fallback chain: kimi-k2.6 → step-3.7-free)\n"
     
     report += """
 ## Next Actions
@@ -134,10 +134,7 @@ def main():
             # Create unblock task for each
             create_unblocking_task(t)
     
-    # 3. Run provider rotation check
-    log("Checking provider rotation...")
-    result = run("python3 /home/ops/code/walletbench/scripts/provider-manager.py")
-    log(result)
+    # 3. Generate report (provider rotation handled by fallback chain automatically)
     
     # 4. Generate report
     report = generate_report(tasks, problematic)
