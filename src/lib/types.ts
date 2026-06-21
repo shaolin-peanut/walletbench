@@ -66,12 +66,15 @@ export interface TraceEvent {
   run_id: string;
   seq: number;
   ts: string;
-  type: "decision" | "tool_call" | "spend" | "artifact";
+  type: "decision" | "tool_call" | "spend" | "artifact" | "policy_violation";
   summary: string;
   data: {
     tool?: string;
     args?: Record<string, unknown>;
     result?: unknown;
+    violation_kind?: string;
+    reason?: string;
+    amount_cents?: number;
   };
 }
 
@@ -176,12 +179,15 @@ export const TraceEventSchema = z.object({
   run_id: z.string(),
   seq: z.number(),
   ts: z.string(),
-  type: z.enum(["decision", "tool_call", "spend", "artifact"]),
+  type: z.enum(["decision", "tool_call", "spend", "artifact", "policy_violation"]),
   summary: z.string(),
   data: z.object({
     tool: z.string().optional(),
     args: z.record(z.unknown()).optional(),
     result: z.unknown().optional(),
+    violation_kind: z.string().optional(),
+    reason: z.string().optional(),
+    amount_cents: z.number().optional(),
   }),
 });
 
