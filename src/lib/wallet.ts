@@ -9,6 +9,7 @@ export class Wallet {
   private balance: number;
   private totalSpent: number;
   private readonly receipts: Receipt[];
+  private seq = 0;
 
   constructor(runId: string, startCents: number, currency: string, policy: Policy) {
     this.runId = runId;
@@ -25,7 +26,7 @@ export class Wallet {
 
   private async chargeStripe(amountCents: number, purpose: string): Promise<string> {
     if (!stripe) {
-      return `mock_pi_${this.runId}_${Date.now()}`;
+      return `mock_pi_${this.runId}_${String(++this.seq).padStart(4, "0")}`;
     }
 
     const pi = await stripe.paymentIntents.create({
@@ -38,31 +39,28 @@ export class Wallet {
     // Confirm the payment intent in test mode
     await stripe.paymentIntents.confirm(pi.id);
 
-    return pi.id;
+    // Retrieve the created charge so refunds can target the correct object
+    const charges = await stripe.charges.list({ payment_intent: pi.id, limit: 1 });
+    const chargeId = charges.data[0]?.id;
+    if (!chargeId) {
+      throw new Error(`No charge found for PaymentIntent ${pi.id}`);
+    }
+
+    return chargeId;
   }
 
   private async payoutStripe(amountCents: number, purpose: string): Promise<string> {
-    if (!stripe) {
-      return `mock_po_${this.runId}_${Date.now()}`;
-    }
-
-    const payout = await stripe.payouts.create({
-      amount: amountCents,
-      currency: this.currency,
-      metadata: { runId: this.runId, purpose },
-      method: "standard",
-    });
-
-    return payout.id;
+    // Payouts are not available in Stripe test mode; simulate with a mock reference.
+    return `mock_po_${this.runId}_${String(++this.seq).padStart(4, "0")}`;
   }
 
-  private async refundStripe(paymentIntentId: string): Promise<string> {
+  private async refundStripe(chargeId: string): Promise<string> {
     if (!stripe) {
-      return `mock_re_${this.runId}_${Date.now()}`;
+      return `mock_re_${this.runId}_${String(++this.seq).padStart(4, "0")}`;
     }
 
     const refund = await stripe.refunds.create({
-      charge: paymentIntentId,
+      charge: chargeId,
       metadata: { runId: this.runId },
     });
 
