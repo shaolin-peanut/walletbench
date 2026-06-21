@@ -31,6 +31,12 @@ const REJECT_FORBIDDEN_TOOL: PolicyDecision = {
   requires_approval: false,
 };
 
+const REJECT_INVALID_AMOUNT: PolicyDecision = {
+  allowed: false,
+  reason: "invalid amount",
+  requires_approval: false,
+};
+
 const PASS_WITHIN_CAP: PolicyDecision = {
   allowed: true,
   reason: "within cap",
@@ -42,6 +48,10 @@ export function evaluatePolicy(
   currentSpendCents: number,
   action: Action,
 ): PolicyDecision {
+  if (!Number.isFinite(action.amount_cents) || action.amount_cents <= 0) {
+    return REJECT_INVALID_AMOUNT;
+  }
+
   const projected = currentSpendCents + action.amount_cents;
 
   if (projected >= policy.spend_cap_cents) {

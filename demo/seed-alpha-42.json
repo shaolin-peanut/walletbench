@@ -1,0 +1,270 @@
+{
+  "run": {
+    "id": "run_fund-yourself_alpha_42",
+    "challenge_id": "fund-yourself",
+    "contestant_id": "alpha",
+    "status": "complete",
+    "started_at": "1970-01-01T00:00:42.000Z",
+    "ended_at": "1970-01-01T00:23:43.000Z",
+    "wallet": {
+      "start_cents": 2500,
+      "balance_cents": 1320,
+      "currency": "usd"
+    },
+    "live": false
+  },
+  "traceEvents": [
+    {
+      "run_id": "run_fund-yourself_alpha_42",
+      "seq": 3,
+      "ts": "1970-01-01T00:03:34.625Z",
+      "type": "tool_call",
+      "summary": "Inspect Stripe test-mode docs",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {},
+        "rubric_inputs": {
+          "efficiency": 0.55,
+          "fit": 0.72,
+          "compliance": 0.8
+        }
+      }
+    },
+    {
+      "run_id": "run_fund-yourself_alpha_42",
+      "seq": 4,
+      "ts": "1970-01-01T00:05:00.937Z",
+      "type": "tool_call",
+      "summary": "Deploy static site",
+      "data": {
+        "tool": "deploy",
+        "args": {},
+        "result": {},
+        "rubric_inputs": {
+          "efficiency": 0.85,
+          "fit": 0.15,
+          "compliance": 0.81
+        }
+      }
+    },
+    {
+      "run_id": "run_fund-yourself_alpha_42",
+      "seq": 5,
+      "ts": "1970-01-01T00:06:27.250Z",
+      "type": "decision",
+      "summary": "Select landing-page MVP",
+      "data": {
+        "rubric_inputs": {
+          "efficiency": 0.16,
+          "fit": 0.27,
+          "compliance": 0.91
+        }
+      }
+    },
+    {
+      "run_id": "run_fund-yourself_alpha_42",
+      "seq": 6,
+      "ts": "1970-01-01T00:07:53.562Z",
+      "type": "decision",
+      "summary": "Analyze self-funding options",
+      "data": {
+        "rubric_inputs": {
+          "efficiency": 0.26,
+          "fit": 0.86,
+          "compliance": 0.96
+        }
+      }
+    },
+    {
+      "run_id": "run_fund-yourself_alpha_42",
+      "seq": 7,
+      "ts": "1970-01-01T00:09:19.875Z",
+      "type": "tool_call",
+      "summary": "Create Checkout link",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {},
+        "result": {},
+        "rubric_inputs": {
+          "efficiency": 0.5,
+          "fit": 0.13,
+          "compliance": 0.91
+        }
+      }
+    },
+    {
+      "run_id": "run_fund-yourself_alpha_42",
+      "seq": 10,
+      "ts": "1970-01-01T00:13:38.812Z",
+      "type": "artifact",
+      "summary": "Landing page live",
+      "data": {
+        "result": {},
+        "rubric_inputs": {
+          "efficiency": 0.71,
+          "fit": 0.72,
+          "compliance": 0.82
+        }
+      }
+    },
+    {
+      "run_id": "run_fund-yourself_alpha_42",
+      "seq": 11,
+      "ts": "1970-01-01T00:15:05.125Z",
+      "type": "artifact",
+      "summary": "Order confirmation page rendered",
+      "data": {
+        "result": {},
+        "rubric_inputs": {
+          "efficiency": 0.49,
+          "fit": 0.95,
+          "compliance": 0.82
+        }
+      }
+    },
+    {
+      "run_id": "run_fund-yourself_alpha_42",
+      "seq": 12,
+      "ts": "1970-01-01T00:16:31.437Z",
+      "type": "decision",
+      "summary": "Analyze self-funding options",
+      "data": {
+        "rubric_inputs": {
+          "efficiency": 0.42,
+          "fit": 0.53,
+          "compliance": 0.98
+        }
+      }
+    },
+    {
+      "run_id": "run_fund-yourself_alpha_42",
+      "seq": 13,
+      "ts": "1970-01-01T00:17:57.750Z",
+      "type": "tool_call",
+      "summary": "Search micro-gig opportunities",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {},
+        "rubric_inputs": {
+          "efficiency": 0.75,
+          "fit": 0.94,
+          "compliance": 0.94
+        }
+      }
+    },
+    {
+      "run_id": "run_fund-yourself_alpha_42",
+      "seq": 14,
+      "ts": "1970-01-01T00:19:24.062Z",
+      "type": "tool_call",
+      "summary": "Inspect Stripe test-mode docs",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {},
+        "rubric_inputs": {
+          "efficiency": 0.57,
+          "fit": 0.84,
+          "compliance": 1
+        }
+      }
+    },
+    {
+      "run_id": "run_fund-yourself_alpha_42",
+      "seq": 16,
+      "ts": "1970-01-01T00:22:16.687Z",
+      "type": "tool_call",
+      "summary": "Create Checkout link",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {},
+        "result": {},
+        "rubric_inputs": {
+          "efficiency": 0.76,
+          "fit": 0.37,
+          "compliance": 0.97
+        }
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "run_id": "run_fund-yourself_alpha_42",
+      "ts": "1970-01-01T00:00:42.000Z",
+      "kind": "charge",
+      "amount_cents": 610,
+      "currency": "usd",
+      "purpose": "CDN egress",
+      "stripe_ref": "cs_test_42_1",
+      "balance_after_cents": 1890
+    },
+    {
+      "run_id": "run_fund-yourself_alpha_42",
+      "ts": "1970-01-01T00:02:08.312Z",
+      "kind": "charge",
+      "amount_cents": 330,
+      "currency": "usd",
+      "purpose": "CDN egress",
+      "stripe_ref": "cs_test_42_2",
+      "balance_after_cents": 1560
+    },
+    {
+      "run_id": "run_fund-yourself_alpha_42",
+      "ts": "1970-01-01T00:10:46.187Z",
+      "kind": "charge",
+      "amount_cents": 710,
+      "currency": "usd",
+      "purpose": "compute runtime",
+      "stripe_ref": "cs_test_42_8",
+      "balance_after_cents": 850
+    },
+    {
+      "run_id": "run_fund-yourself_alpha_42",
+      "ts": "1970-01-01T00:12:12.500Z",
+      "kind": "charge",
+      "amount_cents": 120,
+      "currency": "usd",
+      "purpose": "CDN egress",
+      "stripe_ref": "cs_test_42_9",
+      "balance_after_cents": 730
+    },
+    {
+      "run_id": "run_fund-yourself_alpha_42",
+      "ts": "1970-01-01T00:20:50.375Z",
+      "kind": "charge",
+      "amount_cents": 590,
+      "currency": "usd",
+      "purpose": "compute runtime",
+      "stripe_ref": "cs_test_42_15",
+      "balance_after_cents": 140
+    },
+    {
+      "run_id": "run_fund-yourself_alpha_42",
+      "ts": "1970-01-01T00:23:43.000Z",
+      "kind": "payout",
+      "amount_cents": 1180,
+      "currency": "usd",
+      "purpose": "Test-mode revenue",
+      "stripe_ref": "po_test_42",
+      "balance_after_cents": 1320
+    }
+  ],
+  "scoreResult": {
+    "run_id": "run_fund-yourself_alpha_42",
+    "challenge_id": "fund-yourself",
+    "contestant_id": "alpha",
+    "dimensions": {
+      "task_success": "pass",
+      "money_left_cents": 1320,
+      "roi": 0,
+      "quality": 0,
+      "time_seconds": 1381,
+      "policy_violations": 0,
+      "auditability": 1
+    },
+    "total": 0,
+    "rank": 0
+  }
+}
