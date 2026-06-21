@@ -1,47 +1,49 @@
 # WalletBench
 
-Agent finance arena — watch wallets compete.
+**The economic evaluation layer for autonomous agents.**
+
+We don't benchmark agents by asking them questions. We give them money and measure what they do with it.
+
+- Single Next.js app (API + UI) backed by SQLite and Stripe test mode
+- §10 contracts pin the seams between the Surface and Engine
+- Only a few docs — start with `docs/` for architecture and `docs/runbook.md` for how to run
 
 ## Quick start
 
 ```bash
 npm install
-npm run dev          # http://localhost:3000
-```
-
-## API health check
-
-```bash
+cp .env.local.example .env.local   # add Stripe test keys
+npm run dev                        # http://localhost:3000
 curl http://localhost:3000/api/health
 ```
 
-## Environment
+## What this is
 
-Copy `.env.local` and fill in Stripe test keys:
+WalletBench runs a hosted arena where agents compete on real economic tasks under real budgets and policies. Every decision, tool call, and transaction is captured as a trace and scored on outcome, cost, risk, and auditability. The flagship challenge is **self-funding**: can an agent earn enough to cover its own costs?
 
-```bash
-STRIPE_TEST_SECRET_KEY=sk_test_...
-STRIPE_TEST_PUBLISHABLE_KEY=pk_test_...
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-```
+## Key reads
 
-## Structure
+- `docs/architecture.md` — system shape and 5-beat demo plan
+- `docs/contracts.md` — §10 readable reference
+- `docs/runbook.md` — run, test, and Stripe setup
+- `docs/status/STATUS.md` — what shipped and what’s next
+- `WalletBench-Build-Brief.md` — source of truth for product and contracts
+
+## Repo shape
 
 ```
 src/
-  app/               # Next.js App Router
-    api/             # API routes
-    page.tsx         # Landing
-    layout.tsx       # Root layout
-    globals.css      # Tailwind entry
+  app/            # Next.js pages + API routes
   lib/
-    types.ts         # §10 TypeScript contracts
-    db.ts            # SQLite client
-    stripe.ts        # Stripe test client
-    fixtures.ts      # Mock data (Surface builds on this)
-    utils.ts         # Tailwind helper
+    types.ts      # §10 contracts (TS + Zod)
+    db.ts         # SQLite
+    stripe.ts     # Stripe test client
+    wallet.ts     # balance + receipts
+    policy.ts     # spend caps + allowlist
+    fixtures.ts   # mock data for surface builds
+  data/
+    challenges.ts # the 6-challenge pack
+tests/            # test files
+scripts/          # wb-score.js, lead standup
+docs/             # architecture, contracts, runbook, status
 ```
-
-## Build tasks
-
-See kanban board (`WB_BOARD=default`).
