@@ -3,10 +3,9 @@ import {
   requestApproval,
   approveAction,
   rejectAction,
-  hasPendingApproval,
   type Action,
 } from "./policy";
-import type { Policy, PolicyDecision, Receipt } from "./types";
+import type { Policy, Receipt } from "./types";
 
 export class PolicyViolationError extends Error {
   constructor(public reason: string) {
@@ -68,7 +67,7 @@ export class Wallet {
       throw new PolicyViolationError(decision.reason);
     }
     if (decision.requires_approval) {
-      const actionId = requestApproval(action);
+      const actionId = requestApproval(action).pending_id;
       this.pending.set(actionId, { action, amountCents, purpose, tool });
       return { status: "pending_approval", actionId };
     }
@@ -86,7 +85,7 @@ export class Wallet {
       throw new PolicyViolationError(decision.reason);
     }
     if (decision.requires_approval) {
-      const actionId = requestApproval(action);
+      const actionId = requestApproval(action).pending_id;
       this.pending.set(actionId, { action, amountCents, purpose, tool });
       return { status: "pending_approval", actionId };
     }
@@ -112,7 +111,7 @@ export class Wallet {
   rejectAction(actionId: string): boolean {
     const existed = this.pending.delete(actionId);
     if (existed) {
-      rejectAction(actionId);
+      rejectAction(actionId, this.runId);
     }
     return existed;
   }
@@ -126,14 +125,15 @@ export class Wallet {
     this.balanceCents -= amountCents;
     this.currentSpendCents += amountCents;
     this.seq += 1;
+    const seq = this.seq;
     return {
       run_id: this.runId,
-      ts: new Date().toISOString(),
+      ts: this.timestampForSeq(seq),
       kind: "charge",
       amount_cents: amountCents,
       currency: this.currency,
       purpose,
-      stripe_ref: `pi_test_${this.runId}_${String(this.seq).padStart(4, "0")}`,
+      stripe_ref: `pi_test_${this.runId}_${String(seq).padStart(4, "0")}`,
       balance_after_cents: this.balanceCents,
     };
   }
@@ -147,15 +147,20 @@ export class Wallet {
     this.balanceCents -= amountCents;
     this.currentSpendCents += amountCents;
     this.seq += 1;
+    const seq = this.seq;
     return {
       run_id: this.runId,
-      ts: new Date().toISOString(),
+      ts: this.timestampForSeq(seq),
       kind: "payout",
       amount_cents: amountCents,
       currency: this.currency,
       purpose,
-      stripe_ref: `po_test_${this.runId}_${String(this.seq).padStart(4, "0")}`,
+      stripe_ref: `po_test_${this.runId}_${String(seq).padStart(4, "0")}`,
       balance_after_cents: this.balanceCents,
     };
+  }
+
+  private timestampForSeq(seq: number): string {
+    return new Date(Date.UTC(2026, 0, 1, 0, 0, seq)).toISOString();
   }
 }

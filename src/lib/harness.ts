@@ -61,7 +61,21 @@ export class RunHarness {
         result.total,
         result.rank
       );
+      this.recomputeRanksForChallenge(result.challenge_id);
     }
+  }
+
+  private recomputeRanksForChallenge(challengeId: string): void {
+    const rows = this.db
+      .prepare("SELECT run_id, total FROM scores WHERE challenge_id = ? ORDER BY total DESC, run_id ASC")
+      .all(challengeId) as Array<{ run_id: string; total: number }>;
+
+    const update = this.db.prepare("UPDATE scores SET rank = ? WHERE run_id = ?");
+    const transaction = this.db.transaction((rankedRows: Array<{ run_id: string; total: number }>) => {
+      rankedRows.forEach((row, index) => update.run(index + 1, row.run_id));
+    });
+
+    transaction(rows);
   }
 
   getRun(runId: string): Run | null {

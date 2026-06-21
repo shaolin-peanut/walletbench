@@ -73,6 +73,36 @@ describe("RunHarness", () => {
     assert.ok(updated!.ended_at, "ended_at is set on budget exhaustion");
   });
 
+  it("endRun recomputes deterministic challenge ranks by total descending", () => {
+    const db = freshDb();
+    const harness = new RunHarness(db);
+    const challenge = getChallenge("fund-yourself");
+    assert.ok(challenge, "fixture challenge exists");
+
+    const runIds = [
+      harness.startRun("fund-yourself", "bronze-bot", false).id,
+      harness.startRun("fund-yourself", "gold-bot", false).id,
+      harness.startRun("fund-yourself", "silver-bot", false).id,
+    ];
+
+    db.prepare("UPDATE runs SET wallet_balance_cents = ? WHERE id = ?").run(2000, runIds[0]);
+    db.prepare("UPDATE runs SET wallet_balance_cents = ? WHERE id = ?").run(3500, runIds[1]);
+    db.prepare("UPDATE runs SET wallet_balance_cents = ? WHERE id = ?").run(2500, runIds[2]);
+
+    for (const runId of runIds) {
+      harness.endRun(runId, "complete");
+    }
+
+    const rows = db.prepare("SELECT run_id, rank, total FROM scores WHERE challenge_id = ? ORDER BY rank ASC").all("fund-yourself") as Array<{ run_id: string; rank: number; total: number }>;
+
+    assert.deepStrictEqual(rows.map((row) => row.rank), [1, 2, 3]);
+    assert.strictEqual(rows[0].run_id, runIds[1]);
+    assert.strictEqual(rows[1].run_id, runIds[2]);
+    assert.strictEqual(rows[2].run_id, runIds[0]);
+    assert.ok(rows[0].total >= rows[1].total);
+    assert.ok(rows[1].total >= rows[2].total);
+  });
+
   it("replay emits events in order via callbacks", async () => {
     const db = freshDb();
     const harness = new RunHarness(db);

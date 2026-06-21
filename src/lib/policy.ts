@@ -1,4 +1,6 @@
-import type { Policy, PolicyDecision } from "./types";
+import { createHash } from "node:crypto";
+import { getDb } from "./db";
+import type { Policy, PolicyDecision, TraceEvent } from "./types";
 
 export interface Action {
   kind: string;
@@ -82,16 +84,42 @@ export function evaluatePolicy(
 }
 
 // Approval lifecycle (in-memory, per-process)
-const _pendingApprovals = new Map<string, { action: Action; decision: PolicyDecision }>();
-let _nextApprovalId = 1;
+export interface ApprovalDecision extends PolicyDecision {
+  pending_id: string;
+}
 
-export function requestApproval(action: Action): string {
-  const id = `approval_${_nextApprovalId++}`;
-  _pendingApprovals.set(id, {
-    action,
-    decision: { allowed: true, reason: "awaiting approval", requires_approval: true },
+export interface PolicyViolation {
+  violation_kind: string;
+  tool?: string;
+  reason: string;
+  amount_cents?: number;
+}
+
+const _pendingApprovals = new Map<string, { action: Action; decision: ApprovalDecision }>();
+
+function stableActionKey(action: Action): string {
+  return JSON.stringify({
+    amount_cents: action.amount_cents,
+    kind: action.kind,
+    tool: action.tool ?? null,
   });
-  return id;
+}
+
+function deterministicApprovalId(action: Action): string {
+  const digest = createHash("sha256").update(stableActionKey(action)).digest("hex").slice(0, 16);
+  return `approval_${digest}`;
+}
+
+export function requestApproval(action: Action): ApprovalDecision {
+  const id = deterministicApprovalId(action);
+  const decision: ApprovalDecision = {
+    allowed: true,
+    reason: "awaiting approval",
+    requires_approval: true,
+    pending_id: id,
+  };
+  _pendingApprovals.set(id, { action, decision });
+  return decision;
 }
 
 export function approveAction(actionId: string): PolicyDecision | null {
@@ -101,11 +129,47 @@ export function approveAction(actionId: string): PolicyDecision | null {
   return { allowed: true, reason: "approved", requires_approval: false };
 }
 
-export function rejectAction(actionId: string): PolicyDecision | null {
+export function rejectAction(actionId: string, runId?: string): PolicyDecision | null {
   const entry = _pendingApprovals.get(actionId);
   if (!entry) return null;
   _pendingApprovals.delete(actionId);
-  return { allowed: false, reason: "rejected", requires_approval: false };
+
+  const decision: PolicyDecision = { allowed: false, reason: "rejected", requires_approval: false };
+  if (runId) {
+    logViolation(runId, {
+      violation_kind: "approval_rejected",
+      tool: entry.action.tool,
+      reason: decision.reason,
+      amount_cents: entry.action.amount_cents,
+    });
+  }
+  return decision;
+}
+
+export function logViolation(runId: string, violation: PolicyViolation): TraceEvent {
+  const db = getDb();
+  const row = db.prepare("SELECT MAX(seq) as maxSeq FROM trace_events WHERE run_id = ?").get(runId) as { maxSeq: number | null };
+  const seq = (row.maxSeq ?? 0) + 1;
+  const ts = new Date().toISOString();
+  const data = {
+    violation_kind: violation.violation_kind,
+    ...(violation.tool !== undefined ? { tool: violation.tool } : {}),
+    reason: violation.reason,
+    ...(violation.amount_cents !== undefined ? { amount_cents: violation.amount_cents } : {}),
+  };
+  const summaryTool = violation.tool ? ` for ${violation.tool}` : "";
+  const summary = `Policy violation: ${violation.violation_kind}${summaryTool} — ${violation.reason}`;
+
+  db.prepare(`INSERT INTO trace_events (run_id, seq, ts, type, summary, data) VALUES (?, ?, ?, ?, ?, ?)`).run(
+    runId,
+    seq,
+    ts,
+    "policy_violation",
+    summary,
+    JSON.stringify(data),
+  );
+
+  return { run_id: runId, seq, ts, type: "policy_violation", summary, data };
 }
 
 export function hasPendingApproval(actionId: string): boolean {

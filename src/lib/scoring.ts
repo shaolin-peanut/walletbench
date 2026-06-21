@@ -40,7 +40,9 @@ export function scoreRun(
   const quality = 0.8; // placeholder for E5b LLM-judge
 
   const startedAt = new Date(run.started_at).getTime();
-  const endedAt = run.ended_at ? new Date(run.ended_at).getTime() : Date.now();
+  const endedAt = run.ended_at
+    ? new Date(run.ended_at).getTime()
+    : startedAt + challenge.time_limit_seconds * 1000;
   const timeSeconds = Math.max(0, Math.round((endedAt - startedAt) / 1000));
 
   const policyViolations = traceEvents.filter((e) => e.type === "policy_violation").length;

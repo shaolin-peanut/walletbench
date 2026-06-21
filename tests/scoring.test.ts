@@ -265,6 +265,32 @@ describe("Scoring engine", () => {
     }
   });
 
+  it("scores running runs at the challenge time limit instead of wall-clock now", () => {
+    const challenge = buildChallenge({ time_limit_seconds: 1800 });
+    const run = buildRun({
+      status: "running",
+      started_at: "2026-06-21T16:00:00.000Z",
+      ended_at: null,
+      wallet: { start_cents: 2500, balance_cents: 2730, currency: "usd" },
+    });
+    const traceEvents = buildTraceEvents([]);
+    const receipts = buildReceipts([]);
+    const originalDateNow = Date.now;
+
+    try {
+      Date.now = () => new Date("2026-06-21T16:05:00.000Z").getTime();
+      const first = scoreRun(run, challenge, traceEvents, receipts);
+
+      Date.now = () => new Date("2026-06-21T16:55:00.000Z").getTime();
+      const second = scoreRun(run, challenge, traceEvents, receipts);
+
+      assert.deepStrictEqual(second, first);
+      assert.strictEqual(first.dimensions.time_seconds, 1800);
+    } finally {
+      Date.now = originalDateNow;
+    }
+  });
+
   it("validateDb: scoring is independent of DB storage", () => {
     // Verify that scoreRun does not touch DB by running it solely from in-memory objects.
     const challenge = buildChallenge();
