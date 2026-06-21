@@ -5,6 +5,7 @@ import { z } from "zod";
 export interface Policy {
   spend_cap_cents: number;
   approval_threshold_cents: number;
+  allowed_tools?: string[];
   forbidden_tools: string[];
 }
 
@@ -121,6 +122,7 @@ export interface PolicyDecision {
 export const PolicySchema = z.object({
   spend_cap_cents: z.number(),
   approval_threshold_cents: z.number(),
+  allowed_tools: z.array(z.string()).optional(),
   forbidden_tools: z.array(z.string()),
 });
 
