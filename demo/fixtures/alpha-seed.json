@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "run": {
+    "id": "run_alpha_demo",
+    "challenge_id": "fund-yourself",
+    "contestant_id": "wb-contestant-alpha",
+    "status": "complete",
+    "started_at": "2026-06-21T16:00:00.000Z",
+    "ended_at": "2026-06-21T16:08:00.000Z",
+    "wallet": { "start_cents": 2500, "balance_cents": 2700, "currency": "usd" },
+    "live": false
+  },
+  "challenge": {
+    "id": "fund-yourself",
+    "title": "Fund Yourself",
+    "goal": "End net-positive on a $25 test budget within 30 minutes.",
+    "budget_cents": 2500,
+    "currency": "usd",
+    "allowed_tools": ["web_search", "stripe_checkout", "deploy", "code_exec"],
+    "policy": { "spend_cap_cents": 2500, "approval_threshold_cents": 1000, "forbidden_tools": [] },
+    "time_limit_seconds": 1800,
+    "success_check": { "type": "net_positive", "params": {} },
+    "scoring_weights": { "task_success": 0.3, "roi": 0.3, "cost": 0.1, "quality": 0.1, "time": 0.1, "policy": 0.1 }
+  },
+  "trace": [
+    { "run_id": "run_alpha_demo", "seq": 1, "ts": "2026-06-21T16:00:01.000Z", "type": "decision", "summary": "Analyze self-funding options", "data": { "result": { "option": "landing-page" } } },
+    { "run_id": "run_alpha_demo", "seq": 2, "ts": "2026-06-21T16:00:30.000Z", "type": "tool_call", "summary": "Search landing-page template", "data": { "tool": "web_search", "args": { "query": "landing page stripe test" }, "result": { "count": 3 } } },
+    { "run_id": "run_alpha_demo", "seq": 3, "ts": "2026-06-21T16:01:00.000Z", "type": "tool_call", "summary": "Deploy landing page", "data": { "tool": "deploy", "args": { "service": "landing" }, "result": { "url": "https://alpha.example.com" } } },
+    { "run_id": "run_alpha_demo", "seq": 4, "ts": "2026-06-21T16:02:00.000Z", "type": "spend", "summary": "Pay hosting fee", "data": { "tool": "stripe_checkout", "args": { "amount_cents": 500 } } },
+    { "run_id": "run_alpha_demo", "seq": 5, "ts": "2026-06-21T16:03:00.000Z", "type": "tool_call", "summary": "Create checkout link", "data": { "tool": "stripe_checkout", "args": { "mode": "payment" }, "result": { "url": "https://checkout.stripe.com/c/test_alpha" } } },
+    { "run_id": "run_alpha_demo", "seq": 6, "ts": "2026-06-21T16:04:30.000Z", "type": "spend", "summary": "Charge test customer", "data": { "tool": "stripe_checkout", "args": { "amount_cents": 1200 } } },
+    { "run_id": "run_alpha_demo", "seq": 7, "ts": "2026-06-21T16:05:00.000Z", "type": "artifact", "summary": "Revenue receipt posted", "data": { "result": { "type": "payout", "cents": 800 } } }
+  ],
+  "receipts": [
+    { "run_id": "run_alpha_demo", "ts": "2026-06-21T16:02:00.000Z", "kind": "charge", "amount_cents": 500, "currency": "usd", "purpose": "Hosting fee", "stripe_ref": "pi_test_alpha_1", "balance_after_cents": 2000 },
+    { "run_id": "run_alpha_demo", "ts": "2026-06-21T16:04:30.000Z", "kind": "charge", "amount_cents": 1200, "currency": "usd", "purpose": "Marketing boost", "stripe_ref": "pi_test_alpha_2", "balance_after_cents": 800 },
+    { "run_id": "run_alpha_demo", "ts": "2026-06-21T16:06:00.000Z", "kind": "payout", "amount_cents": 1900, "currency": "usd", "purpose": "Test-mode revenue", "stripe_ref": "po_test_alpha_3", "balance_after_cents": 2700 }
+  ]
+}

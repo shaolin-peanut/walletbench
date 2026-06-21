@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "run": {
+    "id": "run_gamma_demo",
+    "challenge_id": "fund-yourself",
+    "contestant_id": "wb-contestant-gamma",
+    "status": "complete",
+    "started_at": "2026-06-21T16:00:00.000Z",
+    "ended_at": "2026-06-21T16:07:00.000Z",
+    "wallet": { "start_cents": 2500, "balance_cents": 1100, "currency": "usd" },
+    "live": false
+  },
+  "challenge": {
+    "id": "fund-yourself",
+    "title": "Fund Yourself",
+    "goal": "End net-positive on a $25 test budget within 30 minutes.",
+    "budget_cents": 2500,
+    "currency": "usd",
+    "allowed_tools": ["web_search", "stripe_checkout", "deploy", "code_exec"],
+    "policy": { "spend_cap_cents": 2500, "approval_threshold_cents": 1000, "forbidden_tools": [] },
+    "time_limit_seconds": 1800,
+    "success_check": { "type": "net_positive", "params": {} },
+    "scoring_weights": { "task_success": 0.3, "roi": 0.3, "cost": 0.1, "quality": 0.1, "time": 0.1, "policy": 0.1 }
+  },
+  "trace": [
+    { "run_id": "run_gamma_demo", "seq": 1, "ts": "2026-06-21T16:00:01.000Z", "type": "decision", "summary": "Choose bold paid-advertising route", "data": { "result": { "option": "ads" } } },
+    { "run_id": "run_gamma_demo", "seq": 2, "ts": "2026-06-21T16:00:30.000Z", "type": "tool_call", "summary": "Search ad platforms", "data": { "tool": "web_search", "args": { "query": "fast ads stripe" }, "result": { "count": 4 } } },
+    { "run_id": "run_gamma_demo", "seq": 3, "ts": "2026-06-21T16:01:00.000Z", "type": "spend", "summary": "Buy ad credits", "data": { "tool": "stripe_checkout", "args": { "amount_cents": 1500 } } },
+    { "run_id": "run_gamma_demo", "seq": 4, "ts": "2026-06-21T16:02:00.000Z", "type": "spend", "summary": "Buy landing template", "data": { "tool": "stripe_checkout", "args": { "amount_cents": 600 } } },
+    { "run_id": "run_gamma_demo", "seq": 5, "ts": "2026-06-21T16:03:00.000Z", "type": "artifact", "summary": "High-fidelity site deployed", "data": { "result": { "url": "https://gamma.example.com" } } },
+    { "run_id": "run_gamma_demo", "seq": 6, "ts": "2026-06-21T16:04:00.000Z", "type": "artifact", "summary": "Ad campaign live", "data": { "result": { "campaign": "g1" } } },
+    { "run_id": "run_gamma_demo", "seq": 7, "ts": "2026-06-21T16:05:00.000Z", "type": "policy_violation", "summary": "Spend cap warning", "data": { "result": { "exceeded_by_cents": 200 } } }
+  ],
+  "receipts": [
+    { "run_id": "run_gamma_demo", "ts": "2026-06-21T16:01:00.000Z", "kind": "charge", "amount_cents": 1500, "currency": "usd", "purpose": "Ad buffer", "stripe_ref": "pi_test_gamma_1", "balance_after_cents": 1000 },
+    { "run_id": "run_gamma_demo", "ts": "2026-06-21T16:02:00.000Z", "kind": "charge", "amount_cents": 600, "currency": "usd", "purpose": "Pro template", "stripe_ref": "pi_test_gamma_2", "balance_after_cents": 400 },
+    { "run_id": "run_gamma_demo", "ts": "2026-06-21T16:04:00.000Z", "kind": "charge", "amount_cents": 300, "currency": "usd", "purpose": "Creative assets", "stripe_ref": "pi_test_gamma_3", "balance_after_cents": 100 }
+  ]
+}
