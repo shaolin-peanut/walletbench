@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "capture-demo": "node scripts/capture-demo.js",
+    "wb-score": "tsx scripts/wb-score.ts",
     "validate-types": "npx tsx scripts/validate-types.ts",
     "test": "npx tsx --test"
   },

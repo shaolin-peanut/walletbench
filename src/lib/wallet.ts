@@ -31,6 +31,8 @@ export class Wallet {
   private pending: Map<string, PendingApproval>;
   private stripeClient: any | null;
 
+  private seq = 0;
+
   constructor(
     runId: string,
     startCents: number,
@@ -123,6 +125,7 @@ export class Wallet {
     this.stripeClient.charges.create({ amount: amountCents, currency: this.currency, purpose });
     this.balanceCents -= amountCents;
     this.currentSpendCents += amountCents;
+    this.seq += 1;
     return {
       run_id: this.runId,
       ts: new Date().toISOString(),
@@ -130,7 +133,7 @@ export class Wallet {
       amount_cents: amountCents,
       currency: this.currency,
       purpose,
-      stripe_ref: `pi_test_${Date.now()}`,
+      stripe_ref: `pi_test_${this.runId}_${String(this.seq).padStart(4, "0")}`,
       balance_after_cents: this.balanceCents,
     };
   }
@@ -143,6 +146,7 @@ export class Wallet {
     this.stripeClient.payouts.create({ amount: amountCents, currency: this.currency, purpose });
     this.balanceCents -= amountCents;
     this.currentSpendCents += amountCents;
+    this.seq += 1;
     return {
       run_id: this.runId,
       ts: new Date().toISOString(),
@@ -150,7 +154,7 @@ export class Wallet {
       amount_cents: amountCents,
       currency: this.currency,
       purpose,
-      stripe_ref: `po_test_${Date.now()}`,
+      stripe_ref: `po_test_${this.runId}_${String(this.seq).padStart(4, "0")}`,
       balance_after_cents: this.balanceCents,
     };
   }
