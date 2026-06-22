@@ -1,5 +1,7 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { fixtures } from "@/lib/fixtures";
 import type { Challenge } from "@/lib/types";
 
 function fmtBudget(cents: number, currency: string) {
@@ -32,7 +34,43 @@ function ScoringBar({ weights }: { weights: Challenge["scoring_weights"] }) {
 }
 
 export default function ChallengesPage() {
-  const data = fixtures.challenges;
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    (async () => {
+      try {
+        const res = await fetch("/api/challenges");
+        if (res.ok) {
+          const data: Challenge[] = await res.json();
+          if (!cancelled) {
+            setChallenges(data);
+          }
+        }
+      } catch {
+        // fail
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-gray-50 p-6 md:p-8">
+        <div className="mx-auto max-w-6xl">Loading challenges…</div>
+      </main>
+    );
+  }
+
+  const data = challenges;
 
   return (
     <main className="min-h-screen bg-gray-950 text-gray-100 p-6 md:p-8">
@@ -86,15 +124,27 @@ export default function ChallengesPage() {
                       >
                         {tool}
                       </span>
-                    ))}
-                  </div>
+                      <span className="rounded-md bg-gray-100 px-2.5 py-1">Time: {fmtTime(challenge.time_limit_seconds)}</span>
+                    </div>
 
-                  <ScoringBar weights={challenge.scoring_weights} />
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {challenge.allowed_tools.map((tool) => (
+                        <span
+                          key={tool}
+                          className="rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700"
+                        >
+                          {tool}
+                        </span>
+                      ))}
+                    </div>
+
+                    <ScoringBar weights={challenge.scoring_weights} />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </div>
     </main>
   );

@@ -17,7 +17,7 @@ export default function LeaderboardPage() {
           // data loaded but we use fixtures for the demo cards
         }
       } catch {
-        // fallback
+        // fail
       }
       if (!cancelled) {
         setLoading(false);

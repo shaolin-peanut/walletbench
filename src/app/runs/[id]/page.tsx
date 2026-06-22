@@ -288,8 +288,8 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
   if (!run) {
     return (
       <div className="mx-auto max-w-4xl p-6">
-        <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-700">
-          Run not found
+        <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-700">
+          Loading run…
         </div>
       </div>
     );
@@ -318,7 +318,7 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
               {challenge?.title ?? "Unknown Challenge"}
             </h1>
             <div className="text-sm text-gray-600">
-              {contestant?.name ?? "Unknown Contestant"}
+              {run.contestant_id}
             </div>
           </div>
 

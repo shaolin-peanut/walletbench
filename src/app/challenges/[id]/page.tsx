@@ -1,5 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { fixtures } from "@/lib/fixtures";
 import type { Challenge } from "@/lib/types";
 
 function fmtBudget(cents: number, currency: string) {
@@ -27,9 +29,48 @@ function Pill({ children }: { children: React.ReactNode }) {
 }
 
 export default function ChallengeDetailPage({ params }: { params: { id: string } }) {
-  const challenge = fixtures.challenges.find((c) => c.id === params.id);
+  const [challenge, setChallenge] = useState<Challenge | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!challenge) {
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    (async () => {
+      try {
+        const res = await fetch(`/api/challenges/${encodeURIComponent(params.id)}`);
+        if (!res.ok) {
+          throw new Error("Challenge not found");
+        }
+        const data: Challenge = await res.json();
+        if (!cancelled) {
+          setChallenge(data);
+        }
+      } catch (err: any) {
+        if (!cancelled) {
+          setError(err?.message ?? "Failed to load challenge");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [params.id]);
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-gray-50 p-6 md:p-8">
+        <div className="mx-auto max-w-3xl">Loading challenge…</div>
+      </main>
+    );
+  }
+
+  if (error || !challenge) {
     return (
       <main className="min-h-screen bg-gray-950 text-gray-100 p-6 md:p-8">
         <div className="mx-auto max-w-3xl">
