@@ -1,7 +1,5 @@
 "use client";
-
 import { useEffect, useRef, useState } from "react";
-import { fixtures } from "@/lib/fixtures";
 import type { Run, TraceEvent } from "@/lib/types";
 import { ChevronDown, ChevronRight, Clock, Wallet, Activity } from "lucide-react";
 
@@ -49,43 +47,107 @@ function formatCents(cents: number, currency: string): string {
 }
 
 export default function RunTracePage({ params }: { params: { id: string } }) {
-  const run: Run | undefined = fixtures.getRun(params.id);
+  const [run, setRun] = useState<Run | undefined>(undefined);
   const [events, setEvents] = useState<TraceEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [now, setNow] = useState(Date.now());
   const bottomRef = useRef<HTMLDivElement>(null);
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
+  const cancelledRef = useRef(false);
+
+  const [challengeTitle, setChallengeTitle] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    cancelledRef.current = false;
+    setLoading(true);
+    setError(null);
+    let challengeLoaded = false;
+    (async () => {
+      try {
+        const [runRes, traceRes] = await Promise.all([
+          fetch(`/api/runs/${encodeURIComponent(params.id)}`),
+          fetch(`/api/runs/${encodeURIComponent(params.id)}/trace`),
+        ]);
+
+        const runJson = runRes.ok ? await runRes.json() : null;
+        if (!runRes.ok || !runJson) {
+          throw new Error("Run not found");
+        }
+        const traceJson = traceRes.ok ? await traceRes.json() : [];
+
+        if (!cancelled) {
+          setRun(runJson as Run);
+          setEvents(traceJson as TraceEvent[]);
+        }
+        if (!cancelled && !challengeLoaded) {
+          try {
+            const cRes = await fetch(`/api/challenges/${encodeURIComponent(runJson.challenge_id)}`);
+            if (cRes.ok) {
+              const cJson = (await cRes.json()) as { title?: string };
+              setChallengeTitle(cJson.title ?? null);
+            }
+          } catch {
+            // ignore
+          }
+          challengeLoaded = true;
+        }
+      } catch (err: any) {
+        if (!cancelled) {
+          setError(err?.message ?? "Failed to load run");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+      cancelledRef.current = true;
+    };
+  }, [params.id]);
 
   useEffect(() => {
     if (!run) return;
-    const initial = fixtures.getTraceEvents(params.id);
-    setEvents(initial);
-
     const interval = setInterval(() => {
       setNow(Date.now());
       if (run.live && run.status === "running") {
-        const latest = fixtures.getTraceEvents(params.id);
-        setEvents(latest);
+        fetch(`/api/runs/${encodeURIComponent(params.id)}/trace`)
+          .then((res) => (res.ok ? res.json() : []))
+          .then((data: TraceEvent[]) => {
+            if (!cancelledRef.current) {
+              setEvents(data);
+            }
+          })
+          .catch(() => {
+            // ignore polling errors
+          });
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [params.id, run?.live, run?.status]);
+  }, [params.id, run]);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [events.length]);
-
-  if (!run) {
+  if (loading) {
     return (
       <div className="mx-auto max-w-4xl p-6">
-        <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-700">
-          Run not found
+        <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-700">
+          Loading run…
         </div>
       </div>
     );
   }
 
-  const contestant = fixtures.contestants.find((c) => c.id === run.contestant_id);
-  const challenge = fixtures.challenges.find((c) => c.id === run.challenge_id);
+  if (error || !run) {
+    return (
+      <div className="mx-auto max-w-4xl p-6">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-700">
+          {error ?? "Run not found"}
+        </div>
+      </div>
+    );
+  }
 
   const stats = {
     decisions: events.filter((e) => e.type === "decision").length,
@@ -110,10 +172,10 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
             <h1 className="text-xl font-semibold text-gray-900">
-              {challenge?.title ?? "Unknown Challenge"}
+              {challengeTitle ?? run.challenge_id}
             </h1>
             <div className="text-sm text-gray-600">
-              {contestant?.name ?? "Unknown Contestant"}
+              {run.contestant_id}
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3 text-sm">

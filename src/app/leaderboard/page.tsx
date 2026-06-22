@@ -5,7 +5,6 @@ import {
   Challenge,
   ScoreResult,
 } from "@/lib/types";
-import { fixtures } from "@/lib/fixtures";
 
 type SortKey =
   | "rank"
@@ -91,13 +90,10 @@ export default function LeaderboardPage() {
           return;
         }
       } catch {
-        // fallback
+        // fail
       }
       if (!cancelled) {
-        setChallenges(fixtures.challenges);
-        if (fixtures.challenges.length > 0) {
-          setSelectedChallengeId(fixtures.challenges[0].id);
-        }
+        setChallenges([]);
       }
     };
     load();
@@ -126,10 +122,10 @@ export default function LeaderboardPage() {
           return;
         }
       } catch {
-        // fallback
+        // fail
       }
       if (!cancelled) {
-        setRows(fixtures.leaderboard(selectedChallengeId));
+        setRows([]);
       }
     };
     load();
@@ -146,7 +142,7 @@ export default function LeaderboardPage() {
   const enrichedRows = useMemo(() => {
     return rows.map((r) => ({
       ...r,
-      contestantName: fixtures.contestants.find((c) => c.id === r.contestant_id)?.name ?? r.contestant_id,
+      contestantName: r.contestant_id,
     }));
   }, [rows]);
 

@@ -1,5 +1,7 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { fixtures } from "@/lib/fixtures";
 import type { Challenge } from "@/lib/types";
 
 function fmtBudget(cents: number, currency: string) {
@@ -32,7 +34,43 @@ function ScoringBar({ weights }: { weights: Challenge["scoring_weights"] }) {
 }
 
 export default function ChallengesPage() {
-  const data = fixtures.challenges;
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    (async () => {
+      try {
+        const res = await fetch("/api/challenges");
+        if (res.ok) {
+          const data: Challenge[] = await res.json();
+          if (!cancelled) {
+            setChallenges(data);
+          }
+        }
+      } catch {
+        // fail
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-gray-50 p-6 md:p-8">
+        <div className="mx-auto max-w-6xl">Loading challenges…</div>
+      </main>
+    );
+  }
+
+  const data = challenges;
 
   return (
     <main className="min-h-screen bg-gray-50 p-6 md:p-8">
@@ -40,59 +78,63 @@ export default function ChallengesPage() {
         <h1 className="text-3xl font-bold tracking-tight text-gray-900">Challenges</h1>
         <p className="mt-2 text-gray-600">Browse all evaluation challenges. Click a card to view the full spec.</p>
 
-        <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {data.map((challenge) => {
-            const isFlagship = challenge.id === "fund-yourself";
-            return (
-              <Link
-                key={challenge.id}
-                href={`/challenges/${challenge.id}`}
-                className={`relative block rounded-xl border bg-white p-5 shadow-sm transition hover:shadow-md ${
-                  isFlagship
-                    ? "border-amber-400 bg-amber-50/60 p-6 lg:p-7"
-                    : "border-gray-200"
-                }`}
-              >
-                {isFlagship && (
-                  <span className="absolute -top-3 right-4 rounded-full bg-amber-400 px-2.5 py-0.5 text-xs font-semibold text-amber-900">
-                    ★ FLAGSHIP
-                  </span>
-                )}
-
-                <div className="space-y-3">
-                  <div>
-                    <h2 className={`font-semibold text-gray-900 ${isFlagship ? "text-2xl" : "text-xl"}`}>
-                      {challenge.title}
-                    </h2>
-                    <p className="text-xs text-gray-500">{challenge.id}</p>
-                  </div>
-
-                  <p className="line-clamp-2 text-sm leading-relaxed text-gray-700">{challenge.goal}</p>
-
-                  <div className="flex flex-wrap gap-3 text-sm font-medium text-gray-800">
-                    <span className="rounded-md bg-gray-100 px-2.5 py-1">
-                      Budget: {fmtBudget(challenge.budget_cents, challenge.currency)}
+        {data.length === 0 ? (
+          <p className="mt-6 text-sm text-gray-500">No challenges available right now.</p>
+        ) : (
+          <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {data.map((challenge) => {
+              const isFlagship = challenge.id === "fund-yourself";
+              return (
+                <Link
+                  key={challenge.id}
+                  href={`/challenges/${challenge.id}`}
+                  className={`relative block rounded-xl border bg-white p-5 shadow-sm transition hover:shadow-md ${
+                    isFlagship
+                      ? "border-amber-400 bg-amber-50/60 p-6 lg:p-7"
+                      : "border-gray-200"
+                  }`}
+                >
+                  {isFlagship && (
+                    <span className="absolute -top-3 right-4 rounded-full bg-amber-400 px-2.5 py-0.5 text-xs font-semibold text-amber-900">
+                      ★ FLAGSHIP
                     </span>
-                    <span className="rounded-md bg-gray-100 px-2.5 py-1">Time: {fmtTime(challenge.time_limit_seconds)}</span>
-                  </div>
+                  )}
 
-                  <div className="flex flex-wrap gap-1.5">
-                    {challenge.allowed_tools.map((tool) => (
-                      <span
-                        key={tool}
-                        className="rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700"
-                      >
-                        {tool}
+                  <div className="space-y-3">
+                    <div>
+                      <h2 className={`font-semibold text-gray-900 ${isFlagship ? "text-2xl" : "text-xl"}`}>
+                        {challenge.title}
+                      </h2>
+                      <p className="text-xs text-gray-500">{challenge.id}</p>
+                    </div>
+
+                    <p className="line-clamp-2 text-sm leading-relaxed text-gray-700">{challenge.goal}</p>
+
+                    <div className="flex flex-wrap gap-3 text-sm font-medium text-gray-800">
+                      <span className="rounded-md bg-gray-100 px-2.5 py-1">
+                        Budget: {fmtBudget(challenge.budget_cents, challenge.currency)}
                       </span>
-                    ))}
-                  </div>
+                      <span className="rounded-md bg-gray-100 px-2.5 py-1">Time: {fmtTime(challenge.time_limit_seconds)}</span>
+                    </div>
 
-                  <ScoringBar weights={challenge.scoring_weights} />
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {challenge.allowed_tools.map((tool) => (
+                        <span
+                          key={tool}
+                          className="rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700"
+                        >
+                          {tool}
+                        </span>
+                      ))}
+                    </div>
+
+                    <ScoringBar weights={challenge.scoring_weights} />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </div>
     </main>
   );
