@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { evaluatePolicy } from "@/lib/policy";
-import type { Policy, Action } from "@/lib/policy";
+import type { Action } from "@/lib/policy";
+import type { Policy } from "@/lib/types";
 
 const PolicyCheckSchema = z.object({
   policy: z.object({
