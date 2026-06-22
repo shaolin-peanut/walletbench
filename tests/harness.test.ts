@@ -57,7 +57,7 @@ describe("RunHarness", () => {
     }
   });
 
-  it("budget exhaustion auto-ends run as failed", () => {
+  it("budget exhaustion auto-ends run as failed", async () => {
     const db = freshDb();
     const harness = new RunHarness(db);
     const run = harness.startRun("fund-yourself", "engine-bot", false);
@@ -65,7 +65,7 @@ describe("RunHarness", () => {
     // Flip balance to zero to simulate budget exhaustion.
     db.prepare("UPDATE runs SET wallet_balance_cents = 0 WHERE id = ?").run(run.id);
 
-    harness.enforceLimits(run.id);
+    await harness.enforceLimits(run.id);
 
     const updated = harness.getRun(run.id);
     assert.ok(updated, "run still exists");
@@ -73,7 +73,7 @@ describe("RunHarness", () => {
     assert.ok(updated!.ended_at, "ended_at is set on budget exhaustion");
   });
 
-  it("endRun recomputes deterministic challenge ranks by total descending", () => {
+  it("endRun recomputes deterministic challenge ranks by total descending", async () => {
     const db = freshDb();
     const harness = new RunHarness(db);
     const challenge = getChallenge("fund-yourself");
@@ -90,7 +90,7 @@ describe("RunHarness", () => {
     db.prepare("UPDATE runs SET wallet_balance_cents = ? WHERE id = ?").run(2500, runIds[2]);
 
     for (const runId of runIds) {
-      harness.endRun(runId, "complete");
+      await harness.endRun(runId, "complete");
     }
 
     const rows = db.prepare("SELECT run_id, rank, total FROM scores WHERE challenge_id = ? ORDER BY rank ASC").all("fund-yourself") as Array<{ run_id: string; rank: number; total: number }>;

@@ -42,7 +42,7 @@ export class RunHarness {
     return { run_id: runId, seq, ts, type, summary, data };
   }
 
-  endRun(runId: string, status: "complete" | "failed"): void {
+  async endRun(runId: string, status: "complete" | "failed"): Promise<void> {
     const endedAt = new Date().toISOString();
     this.db.prepare(`UPDATE runs SET status = ?, ended_at = ? WHERE id = ?`).run(status, endedAt, runId);
 
@@ -52,7 +52,7 @@ export class RunHarness {
     const receipts = this.getReceipts(runId);
 
     if (run && challenge) {
-      const result = scoreRun(run, challenge, traceEvents, receipts);
+      const result = await scoreRun(run, challenge, traceEvents, receipts);
       this.db.prepare(`INSERT OR REPLACE INTO scores (run_id, challenge_id, contestant_id, dimensions, total, rank) VALUES (?, ?, ?, ?, ?, ?)`).run(
         result.run_id,
         result.challenge_id,
@@ -95,14 +95,14 @@ export class RunHarness {
     return rows.map((row) => ({ run_id: row.run_id, ts: row.ts, kind: row.kind as Receipt["kind"], amount_cents: row.amount_cents, currency: row.currency, purpose: row.purpose, stripe_ref: row.stripe_ref, balance_after_cents: row.balance_after_cents }));
   }
 
-  enforceLimits(runId: string): void {
+  async enforceLimits(runId: string): Promise<void> {
     const run = this.getRun(runId);
     if (!run || run.status !== "running") return;
     const challenge = getChallenge(run.challenge_id);
     if (!challenge) return;
     const elapsed = new Date().getTime() - new Date(run.started_at).getTime();
-    if (elapsed > challenge.time_limit_seconds * 1000) { this.endRun(runId, "failed"); return; }
-    if (run.wallet.balance_cents <= 0) { this.endRun(runId, "failed"); }
+    if (elapsed > challenge.time_limit_seconds * 1000) { await this.endRun(runId, "failed"); return; }
+    if (run.wallet.balance_cents <= 0) { await this.endRun(runId, "failed"); }
   }
 
   replayRun(

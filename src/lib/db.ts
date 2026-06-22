@@ -1,5 +1,6 @@
 import Database from "better-sqlite3";
 import { initDb } from "./schema";
+import { seedDb } from "./seed";
 
 const DB_PATH = process.env.DB_PATH || "./walletbench.db";
 
@@ -11,6 +12,7 @@ export function getDb(): Database.Database {
     db = new Database(path);
     db.pragma("journal_mode = WAL");
     initDb(db);
+    seedDb(db);
   }
   return db;
 }

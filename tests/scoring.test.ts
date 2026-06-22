@@ -73,7 +73,7 @@ function assertScoreShape(result: ScoreResult) {
 }
 
 describe("Scoring engine", () => {
-  it("net-positive run -> task_success='pass', roi>1", () => {
+  it("net-positive run -> task_success='pass', roi>1", async () => {
     const challenge = buildChallenge();
     const run = buildRun({
       ended_at: "2026-06-21T17:00:00.000Z",
@@ -112,14 +112,14 @@ describe("Scoring engine", () => {
       },
     ]);
 
-    const result = scoreRun(run, challenge, traceEvents, receipts);
+    const result = await scoreRun(run, challenge, traceEvents, receipts);
 
     assert.strictEqual(result.dimensions.task_success, "pass");
     assert.ok(result.dimensions.roi > 1, `roi ${result.dimensions.roi} should be > 1`);
     assertScoreShape(result);
   });
 
-  it("net-negative run -> task_success='fail', roi<1", () => {
+  it("net-negative run -> task_success='fail', roi<1", async () => {
     const challenge = buildChallenge();
     const run = buildRun({
       ended_at: "2026-06-21T17:00:00.000Z",
@@ -149,14 +149,14 @@ describe("Scoring engine", () => {
       },
     ]);
 
-    const result = scoreRun(run, challenge, traceEvents, receipts);
+    const result = await scoreRun(run, challenge, traceEvents, receipts);
 
     assert.strictEqual(result.dimensions.task_success, "fail");
     assert.ok(result.dimensions.roi < 1, `roi ${result.dimensions.roi} should be < 1`);
     assertScoreShape(result);
   });
 
-  it("policy violations counted correctly", () => {
+  it("policy violations counted correctly", async () => {
     const challenge = buildChallenge();
     const run = buildRun();
     const traceEvents = buildTraceEvents([
@@ -187,12 +187,12 @@ describe("Scoring engine", () => {
     ]);
     const receipts = buildReceipts([]);
 
-    const result = scoreRun(run, challenge, traceEvents, receipts);
+    const result = await scoreRun(run, challenge, traceEvents, receipts);
 
     assert.strictEqual(result.dimensions.policy_violations, 2);
   });
 
-  it("deterministic: same inputs -> exact same ScoreResult (3 scenarios)", () => {
+  it("deterministic: same inputs -> exact same ScoreResult (3 scenarios)", async () => {
     const challenge = buildChallenge();
     const run = buildRun({
       ended_at: "2026-06-21T17:00:00.000Z",
@@ -254,7 +254,7 @@ describe("Scoring engine", () => {
       },
     ];
 
-    const results = scenarios.map((s) => scoreRun(run, challenge, s.traceEvents, s.receipts));
+    const results = await Promise.all(scenarios.map((s) => scoreRun(run, challenge, s.traceEvents, s.receipts)));
     const firstJson = JSON.stringify(results[0]);
     for (let i = 1; i < results.length; i++) {
       assert.strictEqual(
@@ -265,7 +265,7 @@ describe("Scoring engine", () => {
     }
   });
 
-  it("scores running runs at the challenge time limit instead of wall-clock now", () => {
+  it("scores running runs at the challenge time limit instead of wall-clock now", async () => {
     const challenge = buildChallenge({ time_limit_seconds: 1800 });
     const run = buildRun({
       status: "running",
@@ -279,10 +279,10 @@ describe("Scoring engine", () => {
 
     try {
       Date.now = () => new Date("2026-06-21T16:05:00.000Z").getTime();
-      const first = scoreRun(run, challenge, traceEvents, receipts);
+      const first = await scoreRun(run, challenge, traceEvents, receipts);
 
       Date.now = () => new Date("2026-06-21T16:55:00.000Z").getTime();
-      const second = scoreRun(run, challenge, traceEvents, receipts);
+      const second = await scoreRun(run, challenge, traceEvents, receipts);
 
       assert.deepStrictEqual(second, first);
       assert.strictEqual(first.dimensions.time_seconds, 1800);
@@ -291,7 +291,7 @@ describe("Scoring engine", () => {
     }
   });
 
-  it("validateDb: scoring is independent of DB storage", () => {
+  it("validateDb: scoring is independent of DB storage", async () => {
     // Verify that scoreRun does not touch DB by running it solely from in-memory objects.
     const challenge = buildChallenge();
     const run = buildRun();
@@ -319,7 +319,7 @@ describe("Scoring engine", () => {
     ]);
 
     // If scoreRun ever tries to read DB, this function would fail to import or compile.
-    const result = scoreRun(run, challenge, traceEvents, receipts);
+    const result = await scoreRun(run, challenge, traceEvents, receipts);
     assertScoreShape(result);
     assert.strictEqual(result.challenge_id, challenge.id);
     assert.strictEqual(result.contestant_id, run.contestant_id);
