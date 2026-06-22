@@ -238,7 +238,7 @@ describe("Replay engine", () => {
     assert.strictEqual(done, false, "should not call onDone after stop");
   });
 
-  it("onRunUpdate fires when a run is found", async () => {
+  it("onRunUpdate does not fire from startReplay (caller initializes state)", async () => {
     const runId = "run_001"; // exists in fixtures
     const traceEvents = makeTraceEvents(runId, 2, Date.now());
 
@@ -271,6 +271,6 @@ describe("Replay engine", () => {
       }, 10);
     });
 
-    assert.strictEqual(runUpdated, true, "onRunUpdate should fire for fixture run");
+    assert.strictEqual(runUpdated, false, "onRunUpdate should not fire from startReplay");
   });
 });

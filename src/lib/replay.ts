@@ -4,7 +4,7 @@ import { fixtures } from "./fixtures";
 export interface ReplayCallbacks {
   onTrace(event: TraceEvent): void;
   onReceipt(receipt: Receipt): void;
-  onRunUpdate(run: Run): void;
+  onRunUpdate?(run: Run): void;
   onDone(): void;
 }
 
@@ -60,11 +60,6 @@ export function startReplay(
   let index = 0;
   let nextTimeoutId: ReturnType<typeof setTimeout> | null = null;
   let lastSimulatedTime = 0;
-
-  const run = fixtures.getRun(runId);
-  if (run) {
-    callbacks.onRunUpdate(run);
-  }
 
   function emit(item: TimelineItem) {
     if (item.kind === "trace") {

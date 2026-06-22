@@ -16,6 +16,17 @@ import {
   Pause,
   Repeat2,
 } from "lucide-react";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { useMemo } from "react";
 
 const TYPE_COLORS: Record<string, string> = {
   decision: "bg-blue-100 text-blue-700 border-blue-300",
@@ -102,6 +113,35 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
       )
     : [];
 
+  function formatTime(ts: string): string {
+    return new Date(ts).toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit" });
+  }
+
+  const burnData = useMemo(() => {
+    if (!run) return [];
+    return [
+      {
+        label: "Start",
+        ts: run.started_at,
+        balance: run.wallet.start_cents,
+        delta: 0,
+      },
+      ...receipts.map((receipt) => {
+        const delta =
+          receipt.kind === "charge"
+            ? -receipt.amount_cents
+            : receipt.amount_cents;
+        return {
+          label: formatTime(receipt.ts),
+          ts: receipt.ts,
+          balance: receipt.balance_after_cents,
+          delta,
+          purpose: receipt.purpose,
+        };
+      }),
+    ];
+  }, [run, receipts]);
+
   const stats = {
     decisions: events.filter((e) => e.type === "decision").length,
     tool_calls: events.filter((e) => e.type === "tool_call").length,
@@ -166,10 +206,6 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
             setTimeout(() => setBalanceTick(false), 450);
           }
           lastBalanceRef.current = next;
-        },
-        onRunUpdate: (r) => {
-          setBalance(r.wallet.balance_cents);
-          lastBalanceRef.current = r.wallet.balance_cents;
         },
         onDone: () => {
           setPlaying(false);
@@ -438,6 +474,86 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
           <div className="text-lg font-semibold text-purple-700">
             {stats.artifacts}
           </div>
+        </div>
+      </div>
+
+      {/* Burn chart */}
+      <div className="mb-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <div className="mb-2 flex items-center justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+            Wallet burn
+          </h2>
+          <span className="text-xs text-gray-400">
+            {mode === "replay" ? "Live replay" : "Final run balance"}
+          </span>
+        </div>
+        <div className="h-40 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={burnData} margin={{ left: 4, right: 12, top: 8, bottom: 8 }}>
+              <defs>
+                <linearGradient id="walletBalanceRun" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#34d399" stopOpacity={0.55} />
+                  <stop offset="95%" stopColor="#34d399" stopOpacity={0.04} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid stroke="#e5e7eb" strokeDasharray="3 3" />
+              <XAxis
+                dataKey="label"
+                stroke="#9ca3af"
+                tick={{ fill: "#9ca3af", fontSize: 12 }}
+              />
+              <YAxis
+                stroke="#9ca3af"
+                tick={{ fill: "#9ca3af", fontSize: 12 }}
+                tickFormatter={(value) => `$${Number(value / 100).toFixed(0)}`}
+              />
+              <Tooltip
+                content={({ active, payload, label }) => {
+                  if (!active || !payload || !payload.length) return null;
+                  const item = payload[0].payload as {
+                    label: string;
+                    ts: string;
+                    balance: number;
+                    delta: number;
+                    purpose?: string;
+                  };
+                  return (
+                    <div className="rounded-lg border border-gray-200 bg-white p-2 shadow-md">
+                      <div className="text-xs text-gray-500">{item.label}</div>
+                      <div className="text-sm font-bold text-gray-900">
+                        {new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: run.wallet.currency,
+                        }).format(item.balance / 100)}
+                      </div>
+                      {item.delta !== 0 && (
+                        <div
+                          className={`text-xs font-mono ${
+                            item.delta < 0 ? "text-red-600" : "text-emerald-600"
+                          }`}
+                        >
+                          {item.delta >= 0 ? "+" : "−"}
+                          {new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            currency: run.wallet.currency,
+                          }).format(Math.abs(item.delta) / 100)}
+                          {item.purpose ? ` · ${item.purpose}` : ""}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }}
+              />
+              <ReferenceLine y={run.wallet.start_cents} stroke="#6366f1" strokeDasharray="4 4" />
+              <Area
+                type="monotone"
+                dataKey="balance"
+                stroke="#34d399"
+                strokeWidth={3}
+                fill="url(#walletBalanceRun)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
