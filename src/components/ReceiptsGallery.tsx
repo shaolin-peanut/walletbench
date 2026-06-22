@@ -109,7 +109,7 @@ function ReceiptCard({
                   r.kind === "charge" ? "text-red-400" : "text-emerald-400"
                 }`}
               >
-                {r.kind === "charge" ? "+" : "-"}
+                {r.kind === "charge" ? "-" : "+"}
                 {formatCents(r.amount_cents, r.currency)}
               </p>
               <p className="text-[10px] text-gray-500">

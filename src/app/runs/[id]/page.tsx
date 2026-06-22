@@ -308,12 +308,13 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
     balance !== null ? balance : run.wallet.balance_cents;
 
   return (
-    <div className="mx-auto max-w-5xl p-4 md:p-6">
+    <main className="min-h-screen bg-gray-950 p-4 text-gray-100 md:p-6">
+     <div className="mx-auto max-w-5xl">
       {/* Header */}
-      <div className="mb-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="mb-6 rounded-xl border border-gray-800 bg-gray-900 p-4 shadow-sm">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
-            <h1 className="text-xl font-semibold text-gray-900">
+            <h1 className="text-xl font-semibold text-gray-100">
               {challenge?.title ?? "Unknown Challenge"}
             </h1>
             <div className="text-sm text-gray-600">
@@ -323,7 +324,7 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
 
           <div className="flex flex-wrap items-center gap-3 text-sm">
             {/* Mode toggle */}
-            <div className="inline-flex rounded-full border border-gray-200 bg-gray-50 p-1">
+            <div className="inline-flex rounded-full border border-gray-800 bg-gray-950/60 p-1">
               <button
                 type="button"
                 onClick={() => {
@@ -341,7 +342,7 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
                   "inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold transition",
                   mode === "live"
                     ? "bg-gray-900 text-white shadow"
-                    : "text-gray-600 hover:text-gray-800"
+                    : "text-gray-600 hover:text-gray-200"
                 )}
               >
                 <Activity className="h-3.5 w-3.5" />
@@ -354,7 +355,7 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
                   "inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold transition",
                   mode === "replay"
                     ? "bg-gray-900 text-white shadow"
-                    : "text-gray-600 hover:text-gray-800"
+                    : "text-gray-600 hover:text-gray-200"
                 )}
               >
                 <Repeat2 className="h-3.5 w-3.5" />
@@ -372,7 +373,7 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
                   ? "bg-indigo-100 text-indigo-700 border-indigo-400"
                   : playing
                   ? STATUS_COLORS["running"]
-                  : "bg-gray-100 text-gray-700 border-gray-400"
+                  : "bg-gray-800 text-gray-300 border-gray-400"
               )}
             >
               {mode === "live"
@@ -387,12 +388,12 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
             {/* Replay controls */}
             {mode === "replay" && run && (
               <>
-                <div className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white">
+                <div className="inline-flex items-center gap-1 rounded-full border border-gray-800 bg-gray-900">
                   {playing ? (
                     <button
                       type="button"
                       onClick={pauseReplay}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-l-full text-gray-700 transition hover:bg-gray-50"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-l-full text-gray-300 transition hover:bg-gray-950/60"
                       title="Pause replay"
                     >
                       <Pause className="h-3.5 w-3.5" />
@@ -401,7 +402,7 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
                     <button
                       type="button"
                       onClick={resumeReplay}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-l-full text-gray-700 transition hover:bg-gray-50"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-l-full text-gray-300 transition hover:bg-gray-950/60"
                       title="Play replay"
                     >
                       <Play className="h-3.5 w-3.5" />
@@ -410,7 +411,7 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
                   <select
                     value={speed}
                     onChange={(e) => handleSpeedChange(Number(e.target.value))}
-                    className="h-8 border-0 bg-transparent px-2 pr-6 text-xs font-medium text-gray-700 outline-none"
+                    className="h-8 border-0 bg-transparent px-2 pr-6 text-xs font-medium text-gray-300 outline-none"
                   >
                     {SPEEDS.map((s) => (
                       <option key={s} value={s}>
@@ -425,7 +426,7 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
             {/* Wallet with optional animation */}
             <span
               className={classNames(
-                "inline-flex items-center rounded-lg border border-gray-200 bg-gray-50 px-3 py-1 transition",
+                "inline-flex items-center rounded-lg border border-gray-800 bg-gray-950/60 px-3 py-1 transition",
                 balanceTick && "balance-tick"
               )}
             >
@@ -433,7 +434,7 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
               {formatCents(displayBalance, run.wallet.currency)}
             </span>
 
-            <span className="inline-flex items-center rounded-lg border border-gray-200 bg-gray-50 px-3 py-1">
+            <span className="inline-flex items-center rounded-lg border border-gray-800 bg-gray-950/60 px-3 py-1">
               <Clock className="mr-1.5 h-3.5 w-3.5 text-gray-500" />
               {elapsedTime(run.started_at, run.ended_at, run.live)}
             </span>
@@ -458,25 +459,25 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
 
       {/* Stats bar */}
       <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4">
-        <div className="rounded-lg border border-gray-200 bg-white p-3 text-center shadow-sm">
+        <div className="rounded-lg border border-gray-800 bg-gray-900 p-3 text-center shadow-sm">
           <div className="text-xs font-medium text-gray-500">Decisions</div>
           <div className="text-lg font-semibold text-blue-700">
             {stats.decisions}
           </div>
         </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-3 text-center shadow-sm">
+        <div className="rounded-lg border border-gray-800 bg-gray-900 p-3 text-center shadow-sm">
           <div className="text-xs font-medium text-gray-500">Tool Calls</div>
           <div className="text-lg font-semibold text-green-700">
             {stats.tool_calls}
           </div>
         </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-3 text-center shadow-sm">
+        <div className="rounded-lg border border-gray-800 bg-gray-900 p-3 text-center shadow-sm">
           <div className="text-xs font-medium text-gray-500">Spends</div>
           <div className="text-lg font-semibold text-amber-700">
             {stats.spends}
           </div>
         </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-3 text-center shadow-sm">
+        <div className="rounded-lg border border-gray-800 bg-gray-900 p-3 text-center shadow-sm">
           <div className="text-xs font-medium text-gray-500">Artifacts</div>
           <div className="text-lg font-semibold text-purple-700">
             {stats.artifacts}
@@ -485,7 +486,7 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
       </div>
 
       {/* Burn chart */}
-      <div className="mb-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="mb-4 rounded-xl border border-gray-800 bg-gray-900 p-4 shadow-sm">
         <div className="mb-2 flex items-center justify-between">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
             Wallet burn
@@ -525,9 +526,9 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
                     purpose?: string;
                   };
                   return (
-                    <div className="rounded-lg border border-gray-200 bg-white p-2 shadow-md">
+                    <div className="rounded-lg border border-gray-800 bg-gray-900 p-2 shadow-md">
                       <div className="text-xs text-gray-500">{item.label}</div>
-                      <div className="text-sm font-bold text-gray-900">
+                      <div className="text-sm font-bold text-gray-100">
                         {new Intl.NumberFormat("en-US", {
                           style: "currency",
                           currency: run.wallet.currency,
@@ -565,8 +566,8 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
       </div>
 
       {/* Timeline */}
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
-        <div className="border-b border-gray-100 px-4 py-3">
+      <div className="rounded-xl border border-gray-800 bg-gray-900 shadow-sm">
+        <div className="border-b border-gray-800 px-4 py-3">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
             Trace Timeline
           </h2>
@@ -581,7 +582,7 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
                 <div
                   key={`${event.run_id}-${event.seq}`}
                   className={classNames(
-                    "group rounded-lg border border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm transition-colors",
+                    "group rounded-lg border border-gray-800 bg-gray-900 hover:border-gray-800 hover:shadow-sm transition-colors",
                     isNew && "event-fade-in"
                   )}
                 >
@@ -595,7 +596,7 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
                           className={classNames(
                             "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium",
                             TYPE_COLORS[event.type] ??
-                              "bg-gray-100 text-gray-700 border-gray-300"
+                              "bg-gray-800 text-gray-300 border-gray-300"
                           )}
                         >
                           {event.type}
@@ -604,14 +605,14 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
                           {relativeTime(event.ts)}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-800">
+                      <p className="text-sm text-gray-200">
                         {event.summary}
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={() => toggleExpand(event.seq)}
-                      className="inline-flex items-center gap-1 rounded-md border border-gray-200 bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100"
+                      className="inline-flex items-center gap-1 rounded-md border border-gray-800 bg-gray-950/60 px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-800"
                     >
                       {isExpanded ? (
                         <>
@@ -625,8 +626,8 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
                     </button>
                   </div>
                   {isExpanded && (
-                    <div className="border-t border-gray-100 bg-gray-50 p-3">
-                      <pre className="overflow-x-auto text-xs text-gray-700">
+                    <div className="border-t border-gray-800 bg-gray-950/60 p-3">
+                      <pre className="overflow-x-auto text-xs text-gray-300">
                         {dataStr}
                       </pre>
                     </div>
@@ -671,7 +672,7 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
                           {relativeTime(receipt.ts)}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-800">
+                      <p className="text-sm text-gray-200">
                         {receipt.purpose}
                       </p>
                       <div className="text-xs text-gray-600">
@@ -699,6 +700,7 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
           </div>
         </div>
       </div>
-    </div>
+     </div>
+    </main>
   );
 }

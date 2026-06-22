@@ -18,13 +18,13 @@ function ScoringBar({ weights }: { weights: Challenge["scoring_weights"] }) {
       {entries.map(([key, value]) => (
         <div key={key} className="flex items-center gap-2 text-xs">
           <span className="w-24 text-gray-500 truncate">{key.replace(/_/g, " ")}</span>
-          <div className="h-2 flex-1 rounded-full bg-gray-100">
+          <div className="h-2 flex-1 rounded-full bg-gray-800">
             <div
               className="h-2 rounded-full bg-indigo-500"
               style={{ width: `${Math.round(value * 100)}%` }}
             />
           </div>
-          <span className="w-8 text-right text-gray-600">{value.toFixed(2)}</span>
+          <span className="w-8 text-right text-gray-400">{value.toFixed(2)}</span>
         </div>
       ))}
     </div>
@@ -35,10 +35,12 @@ export default function ChallengesPage() {
   const data = fixtures.challenges;
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6 md:p-8">
+    <main className="min-h-screen bg-gray-950 text-gray-100 p-6 md:p-8">
       <div className="mx-auto max-w-6xl">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Challenges</h1>
-        <p className="mt-2 text-gray-600">Browse all evaluation challenges. Click a card to view the full spec.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-100">Challenges</h1>
+        <p className="mt-2 text-gray-400">
+          Browse all evaluation challenges. Click a card to view the full spec.
+        </p>
 
         <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {data.map((challenge) => {
@@ -47,10 +49,10 @@ export default function ChallengesPage() {
               <Link
                 key={challenge.id}
                 href={`/challenges/${challenge.id}`}
-                className={`relative block rounded-xl border bg-white p-5 shadow-sm transition hover:shadow-md ${
+                className={`relative block rounded-xl border bg-gray-900 p-5 shadow-sm transition hover:border-gray-600 hover:shadow-lg ${
                   isFlagship
-                    ? "border-amber-400 bg-amber-50/60 p-6 lg:p-7"
-                    : "border-gray-200"
+                    ? "border-amber-500/50 bg-amber-500/5 p-6 lg:p-7"
+                    : "border-gray-800"
                 }`}
               >
                 {isFlagship && (
@@ -61,26 +63,26 @@ export default function ChallengesPage() {
 
                 <div className="space-y-3">
                   <div>
-                    <h2 className={`font-semibold text-gray-900 ${isFlagship ? "text-2xl" : "text-xl"}`}>
+                    <h2 className={`font-semibold text-gray-100 ${isFlagship ? "text-2xl" : "text-xl"}`}>
                       {challenge.title}
                     </h2>
                     <p className="text-xs text-gray-500">{challenge.id}</p>
                   </div>
 
-                  <p className="line-clamp-2 text-sm leading-relaxed text-gray-700">{challenge.goal}</p>
+                  <p className="line-clamp-2 text-sm leading-relaxed text-gray-300">{challenge.goal}</p>
 
-                  <div className="flex flex-wrap gap-3 text-sm font-medium text-gray-800">
-                    <span className="rounded-md bg-gray-100 px-2.5 py-1">
+                  <div className="flex flex-wrap gap-3 text-sm font-medium text-gray-200">
+                    <span className="rounded-md bg-gray-800 px-2.5 py-1">
                       Budget: {fmtBudget(challenge.budget_cents, challenge.currency)}
                     </span>
-                    <span className="rounded-md bg-gray-100 px-2.5 py-1">Time: {fmtTime(challenge.time_limit_seconds)}</span>
+                    <span className="rounded-md bg-gray-800 px-2.5 py-1">Time: {fmtTime(challenge.time_limit_seconds)}</span>
                   </div>
 
                   <div className="flex flex-wrap gap-1.5">
                     {challenge.allowed_tools.map((tool) => (
                       <span
                         key={tool}
-                        className="rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700"
+                        className="rounded-full bg-indigo-500/15 px-2.5 py-0.5 text-xs font-medium text-indigo-300"
                       >
                         {tool}
                       </span>
