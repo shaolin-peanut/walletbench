@@ -39,3 +39,51 @@ body {
   color: #fff;
   text-decoration: underline;
 }
+
+/* Replay / demo animations */
+@keyframes balanceTick {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.06);
+    background-color: rgba(16, 185, 129, 0.08);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rankPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+    color: #818cf8;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.event-fade-in {
+  animation: fadeInUp 0.35s ease-out;
+}
+
+.balance-tick {
+  animation: balanceTick 0.45s ease-out;
+}
+
+.rank-pop {
+  animation: rankPop 0.4s ease-out;
+}
