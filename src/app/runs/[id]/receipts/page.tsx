@@ -40,6 +40,12 @@ const KIND_STYLES: Record<Receipt["kind"], string> = {
   refund: "border-sky-500/30 bg-sky-500/10 text-sky-200",
 };
 
+const KIND_SYMBOL: Record<Receipt["kind"], string> = {
+  charge: "−",
+  payout: "+",
+  refund: "↺",
+};
+
 export default function RunReceiptsPage({ params }: { params: { id: string } }) {
   const run = fixtures.getRun(params.id);
 
@@ -182,9 +188,28 @@ export default function RunReceiptsPage({ params }: { params: { id: string } }) 
                   tickFormatter={(value) => `$${Number(value / 100).toFixed(0)}`}
                 />
                 <Tooltip
-                  contentStyle={{ background: "#020617", border: "1px solid #374151", borderRadius: 12 }}
-                  labelStyle={{ color: "#d1d5db" }}
-                  formatter={(value, name) => [formatCents(Number(value), currency), name === "balance" ? "Balance" : name]}
+                  content={({ active, payload, label }) => {
+                    if (!active || !payload || !payload.length) return null;
+                    const item = payload[0].payload as {
+                      label: string;
+                      ts: string;
+                      balance: number;
+                      delta: number;
+                      purpose: string;
+                    };
+                    return (
+                      <div className="rounded-xl border border-gray-700 bg-gray-950 p-3 shadow-xl">
+                        <div className="text-xs text-gray-400">{item.label}</div>
+                        <div className="mt-1 text-sm font-bold text-white">{formatCents(item.balance, currency)}</div>
+                        {item.delta !== 0 && (
+                          <div className={`mt-1 text-xs font-mono ${item.delta < 0 ? "text-red-300" : "text-emerald-300"}`}>
+                            {item.delta >= 0 ? "+" : "−"}
+                            {formatCents(Math.abs(item.delta), currency)} · {item.purpose}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }}
                 />
                 <ReferenceLine y={run.wallet.start_cents} stroke="#6366f1" strokeDasharray="4 4" />
                 <Area type="monotone" dataKey="balance" stroke="#34d399" strokeWidth={3} fill="url(#walletBalance)" />
@@ -203,17 +228,22 @@ export default function RunReceiptsPage({ params }: { params: { id: string } }) 
                   <article key={`${receipt.ts}-${receipt.stripe_ref}`} className={`rounded-2xl border p-4 ${KIND_STYLES[receipt.kind]}`}>
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <div className="text-xs uppercase tracking-[0.2em] opacity-70">{receipt.kind}</div>
-                        <h3 className="mt-1 font-semibold text-white">{receipt.purpose}</h3>
+                        <div className="inline-flex items-center gap-1 rounded-full border border-current px-2 py-0.5 text-xs font-bold">
+                          <span>{KIND_SYMBOL[receipt.kind]}</span>
+                          <span className="uppercase tracking-wider">{receipt.kind}</span>
+                        </div>
+                        <h3 className="mt-2 font-semibold text-white">{receipt.purpose}</h3>
                       </div>
                       <div className="text-right text-lg font-black">
-                        {delta >= 0 ? "+" : "-"}
+                        {delta >= 0 ? "+" : "−"}
                         {formatCents(Math.abs(delta), receipt.currency)}
                       </div>
                     </div>
                     <div className="mt-4 grid gap-2 text-xs text-gray-300 md:grid-cols-2">
-                      <span>{new Date(receipt.ts).toISOString()}</span>
-                      <span className="font-mono text-gray-400 md:text-right">{receipt.stripe_ref}</span>
+                      <span>{formatTime(receipt.ts)} · {new Date(receipt.ts).toLocaleDateString()}</span>
+                      <span className="font-mono text-gray-400 md:text-right" title={receipt.stripe_ref}>
+                        {receipt.stripe_ref.length > 12 ? receipt.stripe_ref.slice(0, 12) + "…" : receipt.stripe_ref}
+                      </span>
                       <span className="md:col-span-2">Balance after: {formatCents(receipt.balance_after_cents, receipt.currency)}</span>
                     </div>
                   </article>
