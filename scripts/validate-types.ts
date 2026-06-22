@@ -72,7 +72,7 @@ const examples = {
     challenge_id: "ch-001",
     contestant_id: "c-001",
     dimensions: {
-      task_success: 0.8,
+      task_success: "pass",
       money_left_cents: 2000,
       roi: 0.2,
       quality: 0.7,

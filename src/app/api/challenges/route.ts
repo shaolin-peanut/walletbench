@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
-import { fixtures } from "@/lib/fixtures";
+import { getDb } from "@/lib/db";
+import { getChallenges } from "@/lib/db-queries";
 
 export async function GET() {
-  // TODO: replace with DB query after E1
-  return NextResponse.json(fixtures.challenges);
+  const db = getDb();
+  const challenges = getChallenges(db);
+  return NextResponse.json(challenges);
 }

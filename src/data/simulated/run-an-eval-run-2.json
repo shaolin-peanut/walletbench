@@ -1,0 +1,445 @@
+{
+  "run": {
+    "id": "run-an-eval-run-2",
+    "challenge_id": "run-an-eval",
+    "contestant_id": "eval-runner",
+    "status": "complete",
+    "started_at": "2026-06-21T18:59:28.314Z",
+    "ended_at": "2026-06-21T19:20:29.314Z",
+    "wallet": {
+      "start_cents": 8000,
+      "balance_cents": 860,
+      "currency": "usd"
+    },
+    "live": false
+  },
+  "traceEvents": [
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 1,
+      "ts": "2026-06-21T18:59:28.314Z",
+      "type": "artifact",
+      "summary": "Plots saved under /artifacts",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 2,
+      "ts": "2026-06-21T19:00:15.017Z",
+      "type": "artifact",
+      "summary": "Scorecard JSON generated",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 3,
+      "ts": "2026-06-21T19:01:01.721Z",
+      "type": "spend",
+      "summary": "Charge $1.50 for dataset download",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 620
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 620
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 4,
+      "ts": "2026-06-21T19:01:48.425Z",
+      "type": "spend",
+      "summary": "Charge $1.00 for compute runtime",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 600
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 600
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 5,
+      "ts": "2026-06-21T19:02:35.128Z",
+      "type": "spend",
+      "summary": "Charge $1.00 for compute runtime",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 280
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 280
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 6,
+      "ts": "2026-06-21T19:03:21.832Z",
+      "type": "artifact",
+      "summary": "Plots saved under /artifacts",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 7,
+      "ts": "2026-06-21T19:04:08.536Z",
+      "type": "tool_call",
+      "summary": "Run first model inference",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 8,
+      "ts": "2026-06-21T19:04:55.239Z",
+      "type": "artifact",
+      "summary": "Artifact produced step 15",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 9,
+      "ts": "2026-06-21T19:05:41.943Z",
+      "type": "tool_call",
+      "summary": "Run second model inference",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 10,
+      "ts": "2026-06-21T19:06:28.647Z",
+      "type": "tool_call",
+      "summary": "Plot latency histograms",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 11,
+      "ts": "2026-06-21T19:07:15.351Z",
+      "type": "tool_call",
+      "summary": "Run first model inference",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 12,
+      "ts": "2026-06-21T19:08:02.054Z",
+      "type": "spend",
+      "summary": "Charge $0.40 for storage",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 210
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 210
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 13,
+      "ts": "2026-06-21T19:08:48.758Z",
+      "type": "tool_call",
+      "summary": "Run first model inference",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 14,
+      "ts": "2026-06-21T19:09:35.462Z",
+      "type": "tool_call",
+      "summary": "Run first model inference",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 15,
+      "ts": "2026-06-21T19:10:22.165Z",
+      "type": "artifact",
+      "summary": "Plots saved under /artifacts",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 16,
+      "ts": "2026-06-21T19:11:08.869Z",
+      "type": "spend",
+      "summary": "Charge $3.20 for inference API calls",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 140
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 140
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 17,
+      "ts": "2026-06-21T19:11:55.573Z",
+      "type": "tool_call",
+      "summary": "Fetch benchmark datasets",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 18,
+      "ts": "2026-06-21T19:12:42.276Z",
+      "type": "tool_call",
+      "summary": "Run second model inference",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 19,
+      "ts": "2026-06-21T19:13:28.980Z",
+      "type": "artifact",
+      "summary": "Scorecard JSON generated",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 20,
+      "ts": "2026-06-21T19:14:15.684Z",
+      "type": "artifact",
+      "summary": "Artifact produced step 15",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 21,
+      "ts": "2026-06-21T19:15:02.388Z",
+      "type": "artifact",
+      "summary": "Artifact produced step 15",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 22,
+      "ts": "2026-06-21T19:15:49.091Z",
+      "type": "tool_call",
+      "summary": "Plot latency histograms",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 23,
+      "ts": "2026-06-21T19:16:35.795Z",
+      "type": "tool_call",
+      "summary": "Run first model inference",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 24,
+      "ts": "2026-06-21T19:17:22.499Z",
+      "type": "decision",
+      "summary": "Conclude eval with savings recommendation",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 25,
+      "ts": "2026-06-21T19:18:09.202Z",
+      "type": "artifact",
+      "summary": "Summary report passed",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 26,
+      "ts": "2026-06-21T19:18:55.906Z",
+      "type": "spend",
+      "summary": "Charge $1.50 for dataset download",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 330
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 330
+      }
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "seq": 27,
+      "ts": "2026-06-21T19:19:42.610Z",
+      "type": "spend",
+      "summary": "Charge $1.50 for dataset download",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 870
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 870
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "run_id": "run-an-eval-run-2",
+      "ts": "2026-06-21T19:01:01.721Z",
+      "kind": "charge",
+      "amount_cents": 620,
+      "currency": "usd",
+      "purpose": "dataset download",
+      "stripe_ref": "cs_test_0c14f6d1",
+      "balance_after_cents": 7380
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "ts": "2026-06-21T19:01:48.425Z",
+      "kind": "charge",
+      "amount_cents": 600,
+      "currency": "usd",
+      "purpose": "compute runtime",
+      "stripe_ref": "cs_test_2685f548",
+      "balance_after_cents": 6780
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "ts": "2026-06-21T19:02:35.128Z",
+      "kind": "charge",
+      "amount_cents": 280,
+      "currency": "usd",
+      "purpose": "compute runtime",
+      "stripe_ref": "cs_test_2c734827",
+      "balance_after_cents": 6500
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "ts": "2026-06-21T19:08:02.054Z",
+      "kind": "charge",
+      "amount_cents": 210,
+      "currency": "usd",
+      "purpose": "storage",
+      "stripe_ref": "cs_test_d0641c8e",
+      "balance_after_cents": 6290
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "ts": "2026-06-21T19:11:08.869Z",
+      "kind": "charge",
+      "amount_cents": 140,
+      "currency": "usd",
+      "purpose": "inference API calls",
+      "stripe_ref": "cs_test_e65a546f",
+      "balance_after_cents": 6150
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "ts": "2026-06-21T19:18:55.906Z",
+      "kind": "charge",
+      "amount_cents": 330,
+      "currency": "usd",
+      "purpose": "dataset download",
+      "stripe_ref": "cs_test_1f500dee",
+      "balance_after_cents": 5820
+    },
+    {
+      "run_id": "run-an-eval-run-2",
+      "ts": "2026-06-21T19:19:42.610Z",
+      "kind": "charge",
+      "amount_cents": 870,
+      "currency": "usd",
+      "purpose": "dataset download",
+      "stripe_ref": "cs_test_9b385f66",
+      "balance_after_cents": 4950
+    }
+  ],
+  "scoreResult": {
+    "run_id": "run-an-eval-run-2",
+    "challenge_id": "run-an-eval",
+    "contestant_id": "eval-runner",
+    "dimensions": {
+      "task_success": "partial",
+      "money_left_cents": 860,
+      "roi": 0,
+      "quality": 0.73,
+      "time_seconds": 1261,
+      "policy_violations": 0,
+      "auditability": 0.85
+    },
+    "total": 0.6,
+    "rank": 0
+  }
+}

@@ -1,0 +1,439 @@
+{
+  "run": {
+    "id": "source-hardware-kit-run-3",
+    "challenge_id": "source-hardware-kit",
+    "contestant_id": "cloud-optimizer",
+    "status": "failed",
+    "started_at": "2026-06-21T19:14:34.316Z",
+    "ended_at": "2026-06-21T19:20:29.316Z",
+    "wallet": {
+      "start_cents": 10000,
+      "balance_cents": 267,
+      "currency": "usd"
+    },
+    "live": false
+  },
+  "traceEvents": [
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 1,
+      "ts": "2026-06-21T19:14:34.316Z",
+      "type": "spend",
+      "summary": "Charge $1.40 for storage media",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 860
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 860
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 2,
+      "ts": "2026-06-21T19:14:47.464Z",
+      "type": "decision",
+      "summary": "Review total before checkout",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 3,
+      "ts": "2026-06-21T19:15:00.612Z",
+      "type": "spend",
+      "summary": "Charge $5.20 for compute boards",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 490
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 490
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 4,
+      "ts": "2026-06-21T19:15:13.760Z",
+      "type": "tool_call",
+      "summary": "Compare specs across SKUs",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 5,
+      "ts": "2026-06-21T19:15:26.908Z",
+      "type": "artifact",
+      "summary": "Compatibility checksum passed",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 6,
+      "ts": "2026-06-21T19:15:40.056Z",
+      "type": "decision",
+      "summary": "Review total before checkout",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 7,
+      "ts": "2026-06-21T19:15:53.204Z",
+      "type": "artifact",
+      "summary": "Compatibility checksum passed",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 8,
+      "ts": "2026-06-21T19:16:06.353Z",
+      "type": "decision",
+      "summary": "Trim to fit remaining budget",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 9,
+      "ts": "2026-06-21T19:16:19.501Z",
+      "type": "tool_call",
+      "summary": "Compare specs across SKUs",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 10,
+      "ts": "2026-06-21T19:16:32.649Z",
+      "type": "artifact",
+      "summary": "Compatibility checksum passed",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 11,
+      "ts": "2026-06-21T19:16:45.797Z",
+      "type": "decision",
+      "summary": "Trim to fit remaining budget",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 12,
+      "ts": "2026-06-21T19:16:58.945Z",
+      "type": "spend",
+      "summary": "Charge $1.40 for storage media",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 240
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 240
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 13,
+      "ts": "2026-06-21T19:17:12.093Z",
+      "type": "spend",
+      "summary": "Charge $0.30 for shipping estimate",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 730
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 730
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 14,
+      "ts": "2026-06-21T19:17:25.241Z",
+      "type": "artifact",
+      "summary": "Bill of materials Markdown",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 15,
+      "ts": "2026-06-21T19:17:38.390Z",
+      "type": "spend",
+      "summary": "Charge $5.20 for compute boards",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 320
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 320
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 16,
+      "ts": "2026-06-21T19:17:51.538Z",
+      "type": "spend",
+      "summary": "Charge $5.20 for compute boards",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 750
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 750
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 17,
+      "ts": "2026-06-21T19:18:04.686Z",
+      "type": "artifact",
+      "summary": "Bill of materials Markdown",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 18,
+      "ts": "2026-06-21T19:18:17.834Z",
+      "type": "artifact",
+      "summary": "Final parts list exported",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 19,
+      "ts": "2026-06-21T19:18:30.982Z",
+      "type": "tool_call",
+      "summary": "Run cost optimizer",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 20,
+      "ts": "2026-06-21T19:18:44.130Z",
+      "type": "spend",
+      "summary": "Charge $0.30 for shipping estimate",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 220
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 220
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 21,
+      "ts": "2026-06-21T19:18:57.278Z",
+      "type": "decision",
+      "summary": "Pick cluster kit approach",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 22,
+      "ts": "2026-06-21T19:19:10.427Z",
+      "type": "tool_call",
+      "summary": "Cross-check compatibility matrix",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 23,
+      "ts": "2026-06-21T19:19:23.575Z",
+      "type": "tool_call",
+      "summary": "Cross-check compatibility matrix",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 24,
+      "ts": "2026-06-21T19:19:36.723Z",
+      "type": "tool_call",
+      "summary": "Compare specs across SKUs",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 25,
+      "ts": "2026-06-21T19:19:49.871Z",
+      "type": "tool_call",
+      "summary": "Compare specs across SKUs",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 26,
+      "ts": "2026-06-21T19:20:03.019Z",
+      "type": "decision",
+      "summary": "Trim to fit remaining budget",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "seq": 27,
+      "ts": "2026-06-21T19:20:16.167Z",
+      "type": "decision",
+      "summary": "Pick cluster kit approach",
+      "data": {
+        "result": {}
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "ts": "2026-06-21T19:14:34.316Z",
+      "kind": "charge",
+      "amount_cents": 860,
+      "currency": "usd",
+      "purpose": "storage media",
+      "stripe_ref": "cs_test_09d8aaeb",
+      "balance_after_cents": 9140
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "ts": "2026-06-21T19:15:00.612Z",
+      "kind": "charge",
+      "amount_cents": 490,
+      "currency": "usd",
+      "purpose": "compute boards",
+      "stripe_ref": "cs_test_b0f932f7",
+      "balance_after_cents": 8650
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "ts": "2026-06-21T19:16:58.945Z",
+      "kind": "charge",
+      "amount_cents": 240,
+      "currency": "usd",
+      "purpose": "storage media",
+      "stripe_ref": "cs_test_c0e9efcb",
+      "balance_after_cents": 8410
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "ts": "2026-06-21T19:17:12.093Z",
+      "kind": "charge",
+      "amount_cents": 730,
+      "currency": "usd",
+      "purpose": "shipping estimate",
+      "stripe_ref": "cs_test_607182a5",
+      "balance_after_cents": 7680
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "ts": "2026-06-21T19:17:38.390Z",
+      "kind": "charge",
+      "amount_cents": 320,
+      "currency": "usd",
+      "purpose": "compute boards",
+      "stripe_ref": "cs_test_9f278324",
+      "balance_after_cents": 7360
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "ts": "2026-06-21T19:17:51.538Z",
+      "kind": "charge",
+      "amount_cents": 750,
+      "currency": "usd",
+      "purpose": "compute boards",
+      "stripe_ref": "cs_test_7be7739f",
+      "balance_after_cents": 6610
+    },
+    {
+      "run_id": "source-hardware-kit-run-3",
+      "ts": "2026-06-21T19:18:44.130Z",
+      "kind": "charge",
+      "amount_cents": 220,
+      "currency": "usd",
+      "purpose": "shipping estimate",
+      "stripe_ref": "cs_test_3aac558a",
+      "balance_after_cents": 6390
+    }
+  ],
+  "scoreResult": {
+    "run_id": "source-hardware-kit-run-3",
+    "challenge_id": "source-hardware-kit",
+    "contestant_id": "cloud-optimizer",
+    "dimensions": {
+      "task_success": "fail",
+      "money_left_cents": 267,
+      "roi": -0.29,
+      "quality": 0.91,
+      "time_seconds": 355,
+      "policy_violations": 0,
+      "auditability": 0.84
+    },
+    "total": 0.45,
+    "rank": 0
+  }
+}

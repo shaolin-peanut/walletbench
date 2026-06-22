@@ -23,6 +23,30 @@ const rejectingStripe = {
   },
 };
 
+const recordingStripe = () => ({
+  charges: {
+    create: (_params: any) => ({ id: "ignored_charge_ref" }),
+  },
+  payouts: {
+    create: (_params: any) => ({ id: "ignored_payout_ref" }),
+  },
+});
+
+async function runDeterministicWalletSequence() {
+  const wallet = new Wallet(
+    "run_deterministic",
+    2500,
+    "usd",
+    policy({ approval_threshold_cents: 10000, forbidden_tools: [] }),
+    recordingStripe() as any,
+  );
+
+  return [
+    wallet.charge(100, "search", "first deterministic charge"),
+    wallet.payout(75, "stripe_checkout", "first deterministic payout"),
+  ];
+}
+
 describe("Wallet", () => {
   it("charge with a forbidden tool is rejected before Stripe is called", () => {
     const wallet = new Wallet("run_test", 2500, "usd", policy(), rejectingStripe);
@@ -116,5 +140,18 @@ describe("Wallet", () => {
     assert.strictEqual(receipt.amount_cents, 400);
     assert.strictEqual(calls.length, 1);
     assert.strictEqual(wallet.getBalanceCents(), 2100);
+  });
+
+  it("produces deep-equal deterministic receipts for identical fresh wallet sequences", async () => {
+    const originalDateNow = Date.now;
+    try {
+      Date.now = () => new Date("2026-06-21T16:00:00.000Z").getTime();
+      const firstReceipts = await runDeterministicWalletSequence();
+      const secondReceipts = await runDeterministicWalletSequence();
+
+      assert.deepStrictEqual(secondReceipts, firstReceipts);
+    } finally {
+      Date.now = originalDateNow;
+    }
   });
 });

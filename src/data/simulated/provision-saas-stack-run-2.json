@@ -1,0 +1,368 @@
+{
+  "run": {
+    "id": "provision-saas-stack-run-2",
+    "challenge_id": "provision-saas-stack",
+    "contestant_id": "budget-watcher",
+    "status": "complete",
+    "started_at": "2026-06-21T19:10:14.311Z",
+    "ended_at": "2026-06-21T19:20:29.311Z",
+    "wallet": {
+      "start_cents": 5000,
+      "balance_cents": 511,
+      "currency": "usd"
+    },
+    "live": false
+  },
+  "traceEvents": [
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 1,
+      "ts": "2026-06-21T19:10:14.311Z",
+      "type": "artifact",
+      "summary": "Summary doc produced",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 2,
+      "ts": "2026-06-21T19:10:37.964Z",
+      "type": "artifact",
+      "summary": "README with endpoints",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 3,
+      "ts": "2026-06-21T19:11:01.618Z",
+      "type": "tool_call",
+      "summary": "Attach test subscription",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 4,
+      "ts": "2026-06-21T19:11:25.272Z",
+      "type": "artifact",
+      "summary": "API health check passes",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 5,
+      "ts": "2026-06-21T19:11:48.926Z",
+      "type": "artifact",
+      "summary": "README with endpoints",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 6,
+      "ts": "2026-06-21T19:12:12.580Z",
+      "type": "tool_call",
+      "summary": "Attach test subscription",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 7,
+      "ts": "2026-06-21T19:12:36.234Z",
+      "type": "tool_call",
+      "summary": "Attach test subscription",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 8,
+      "ts": "2026-06-21T19:12:59.887Z",
+      "type": "decision",
+      "summary": "Finalize topology review",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 9,
+      "ts": "2026-06-21T19:13:23.541Z",
+      "type": "tool_call",
+      "summary": "Attach test subscription",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 10,
+      "ts": "2026-06-21T19:13:47.195Z",
+      "type": "decision",
+      "summary": "Finalize topology review",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 11,
+      "ts": "2026-06-21T19:14:10.849Z",
+      "type": "tool_call",
+      "summary": "Search SaaS templates",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 12,
+      "ts": "2026-06-21T19:14:34.503Z",
+      "type": "tool_call",
+      "summary": "Run integration smoke tests",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 13,
+      "ts": "2026-06-21T19:14:58.157Z",
+      "type": "tool_call",
+      "summary": "Run integration smoke tests",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 14,
+      "ts": "2026-06-21T19:15:21.811Z",
+      "type": "tool_call",
+      "summary": "Run integration smoke tests",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 15,
+      "ts": "2026-06-21T19:15:45.464Z",
+      "type": "spend",
+      "summary": "Charge $0.90 for log storage",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 550
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 550
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 16,
+      "ts": "2026-06-21T19:16:09.118Z",
+      "type": "tool_call",
+      "summary": "Deploy backend service",
+      "data": {
+        "tool": "deploy",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 17,
+      "ts": "2026-06-21T19:16:32.772Z",
+      "type": "spend",
+      "summary": "Charge $1.20 for container runtime",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 750
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 750
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 18,
+      "ts": "2026-06-21T19:16:56.426Z",
+      "type": "artifact",
+      "summary": "README with endpoints",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 19,
+      "ts": "2026-06-21T19:17:20.080Z",
+      "type": "tool_call",
+      "summary": "Run integration smoke tests",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 20,
+      "ts": "2026-06-21T19:17:43.734Z",
+      "type": "tool_call",
+      "summary": "Search SaaS templates",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 21,
+      "ts": "2026-06-21T19:18:07.387Z",
+      "type": "artifact",
+      "summary": "README with endpoints",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 22,
+      "ts": "2026-06-21T19:18:31.041Z",
+      "type": "tool_call",
+      "summary": "Run integration smoke tests",
+      "data": {
+        "tool": "code_exec",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 23,
+      "ts": "2026-06-21T19:18:54.695Z",
+      "type": "artifact",
+      "summary": "README with endpoints",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 24,
+      "ts": "2026-06-21T19:19:18.349Z",
+      "type": "tool_call",
+      "summary": "Deploy backend service",
+      "data": {
+        "tool": "deploy",
+        "args": {},
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 25,
+      "ts": "2026-06-21T19:19:42.003Z",
+      "type": "artifact",
+      "summary": "API health check passes",
+      "data": {
+        "result": {}
+      }
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "seq": 26,
+      "ts": "2026-06-21T19:20:05.657Z",
+      "type": "tool_call",
+      "summary": "Search SaaS templates",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {}
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "ts": "2026-06-21T19:15:45.464Z",
+      "kind": "charge",
+      "amount_cents": 550,
+      "currency": "usd",
+      "purpose": "log storage",
+      "stripe_ref": "cs_test_48530b0a",
+      "balance_after_cents": 4450
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "ts": "2026-06-21T19:16:32.772Z",
+      "kind": "charge",
+      "amount_cents": 750,
+      "currency": "usd",
+      "purpose": "container runtime",
+      "stripe_ref": "cs_test_174637d9",
+      "balance_after_cents": 3700
+    },
+    {
+      "run_id": "provision-saas-stack-run-2",
+      "ts": "2026-06-21T19:20:29.311Z",
+      "kind": "payout",
+      "amount_cents": 2245,
+      "currency": "usd",
+      "purpose": "Test-mode revenue",
+      "stripe_ref": "po_test_2e271fb0",
+      "balance_after_cents": 5945
+    }
+  ],
+  "scoreResult": {
+    "run_id": "provision-saas-stack-run-2",
+    "challenge_id": "provision-saas-stack",
+    "contestant_id": "budget-watcher",
+    "dimensions": {
+      "task_success": "partial",
+      "money_left_cents": 511,
+      "roi": -0.07,
+      "quality": 0.79,
+      "time_seconds": 615,
+      "policy_violations": 0,
+      "auditability": 0.99
+    },
+    "total": 0.63,
+    "rank": 0
+  }
+}

@@ -211,7 +211,7 @@ export const scoreResults: ScoreResult[] = [
     challenge_id: "fund-yourself",
     contestant_id: "agent-surface",
     dimensions: {
-      task_success: 0.9,
+      task_success: "pass",
       money_left_cents: 2500,
       roi: 1.2,
       quality: 0.85,
@@ -227,7 +227,7 @@ export const scoreResults: ScoreResult[] = [
     challenge_id: "fund-yourself",
     contestant_id: "engine-bot",
     dimensions: {
-      task_success: 0.7,
+      task_success: "partial",
       money_left_cents: 2100,
       roi: 0.8,
       quality: 0.75,
@@ -243,7 +243,7 @@ export const scoreResults: ScoreResult[] = [
     challenge_id: "run-an-eval",
     contestant_id: "external-agent",
     dimensions: {
-      task_success: 0.75,
+      task_success: "partial",
       money_left_cents: 4300,
       roi: 0.5,
       quality: 0.7,
@@ -287,3 +287,4 @@ export const fixtures = {
   receipts,
   scoreResults,
 };
+

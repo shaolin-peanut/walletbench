@@ -1,0 +1,141 @@
+import Database from "better-sqlite3";
+import { getChallenge } from "./challenges";
+import type { Run, TraceEvent, Wallet, Receipt } from "./types";
+
+type TraceEventType = "decision" | "tool_call" | "spend" | "artifact" | "policy_violation";
+
+import { scoreRun } from "./scoring";
+
+export class RunHarness {
+  private db: Database.Database;
+
+  constructor(db: Database.Database) {
+    this.db = db;
+  }
+
+  startRun(challengeId: string, contestantId: string, live: boolean): Run {
+    const challenge = getChallenge(challengeId);
+    if (!challenge) throw new Error(`Challenge not found: ${challengeId}`);
+
+    const runId = crypto.randomUUID();
+    const startedAt = new Date().toISOString();
+    const wallet: Wallet = { start_cents: challenge.budget_cents, balance_cents: challenge.budget_cents, currency: challenge.currency };
+
+    this.db.prepare(
+      `INSERT INTO runs (id, challenge_id, contestant_id, status, started_at, ended_at, wallet_start_cents, wallet_balance_cents, wallet_currency, live)
+       VALUES (?, ?, ?, 'running', ?, NULL, ?, ?, ?, ?)`
+    ).run(runId, challengeId, contestantId, startedAt, wallet.start_cents, wallet.balance_cents, wallet.currency, live ? 1 : 0);
+
+    return { id: runId, challenge_id: challengeId, contestant_id: contestantId, status: "running", started_at: startedAt, ended_at: null, wallet, live };
+  }
+
+  emitTrace(runId: string, type: TraceEventType, summary: string, data: TraceEvent["data"]): TraceEvent {
+    const validTypes: TraceEventType[] = ["decision", "tool_call", "spend", "artifact", "policy_violation"];
+    if (!validTypes.includes(type)) throw new Error(`Invalid trace event type: ${String(type)}`);
+
+    const row = this.db.prepare("SELECT MAX(seq) as maxSeq FROM trace_events WHERE run_id = ?").get(runId) as { maxSeq: number | null };
+    const seq = (row.maxSeq || 0) + 1;
+    const ts = new Date().toISOString();
+
+    this.db.prepare(`INSERT INTO trace_events (run_id, seq, ts, type, summary, data) VALUES (?, ?, ?, ?, ?, ?)`).run(runId, seq, ts, type, summary, JSON.stringify(data));
+
+    return { run_id: runId, seq, ts, type, summary, data };
+  }
+
+  async endRun(runId: string, status: "complete" | "failed"): Promise<void> {
+    const endedAt = new Date().toISOString();
+    this.db.prepare(`UPDATE runs SET status = ?, ended_at = ? WHERE id = ?`).run(status, endedAt, runId);
+
+    const run = this.getRun(runId);
+    const challenge = run ? getChallenge(run.challenge_id) : undefined;
+    const traceEvents = this.getTrace(runId);
+    const receipts = this.getReceipts(runId);
+
+    if (run && challenge) {
+      const result = await scoreRun(run, challenge, traceEvents, receipts);
+      this.db.prepare(`INSERT OR REPLACE INTO scores (run_id, challenge_id, contestant_id, dimensions, total, rank) VALUES (?, ?, ?, ?, ?, ?)`).run(
+        result.run_id,
+        result.challenge_id,
+        result.contestant_id,
+        JSON.stringify(result.dimensions),
+        result.total,
+        result.rank
+      );
+      this.recomputeRanksForChallenge(result.challenge_id);
+    }
+  }
+
+  private recomputeRanksForChallenge(challengeId: string): void {
+    const rows = this.db
+      .prepare("SELECT run_id, total FROM scores WHERE challenge_id = ? ORDER BY total DESC, run_id ASC")
+      .all(challengeId) as Array<{ run_id: string; total: number }>;
+
+    const update = this.db.prepare("UPDATE scores SET rank = ? WHERE run_id = ?");
+    const transaction = this.db.transaction((rankedRows: Array<{ run_id: string; total: number }>) => {
+      rankedRows.forEach((row, index) => update.run(index + 1, row.run_id));
+    });
+
+    transaction(rows);
+  }
+
+  getRun(runId: string): Run | null {
+    const row = this.db.prepare("SELECT * FROM runs WHERE id = ?").get(runId) as any;
+    if (!row) return null;
+    const wallet: Wallet = { start_cents: row.wallet_start_cents, balance_cents: row.wallet_balance_cents, currency: row.wallet_currency };
+    return { id: row.id, challenge_id: row.challenge_id, contestant_id: row.contestant_id, status: row.status as Run["status"], started_at: row.started_at, ended_at: row.ended_at, wallet, live: !!row.live };
+  }
+
+  getTrace(runId: string): TraceEvent[] {
+    const rows = this.db.prepare("SELECT * FROM trace_events WHERE run_id = ? ORDER BY seq").all(runId) as any[];
+    return rows.map((row) => ({ run_id: row.run_id, seq: row.seq, ts: row.ts, type: row.type as TraceEventType, summary: row.summary, data: JSON.parse(row.data) }));
+  }
+
+  getReceipts(runId: string): Receipt[] {
+    const rows = this.db.prepare("SELECT * FROM receipts WHERE run_id = ? ORDER BY ts").all(runId) as any[];
+    return rows.map((row) => ({ run_id: row.run_id, ts: row.ts, kind: row.kind as Receipt["kind"], amount_cents: row.amount_cents, currency: row.currency, purpose: row.purpose, stripe_ref: row.stripe_ref, balance_after_cents: row.balance_after_cents }));
+  }
+
+  async enforceLimits(runId: string): Promise<void> {
+    const run = this.getRun(runId);
+    if (!run || run.status !== "running") return;
+    const challenge = getChallenge(run.challenge_id);
+    if (!challenge) return;
+    const elapsed = new Date().getTime() - new Date(run.started_at).getTime();
+    if (elapsed > challenge.time_limit_seconds * 1000) { await this.endRun(runId, "failed"); return; }
+    if (run.wallet.balance_cents <= 0) { await this.endRun(runId, "failed"); }
+  }
+
+  replayRun(
+    runId: string,
+    callbacks: { onTrace: (event: TraceEvent) => void; onReceipt: (receipt: Receipt) => void; onDone: () => void },
+    speed: number = 0
+  ): void {
+    const traces = this.getTrace(runId);
+    const receipts = this.getReceipts(runId);
+    RunHarness.replaySaved(traces, receipts, callbacks, speed);
+  }
+
+  static replaySaved(
+    traceEvents: TraceEvent[],
+    receipts: Receipt[],
+    callbacks: { onTrace: (event: TraceEvent) => void; onReceipt: (receipt: Receipt) => void; onDone: () => void },
+    speed: number = 0
+  ): void {
+    let traceIndex = 0;
+    let receiptIndex = 0;
+    const next = () => {
+      if (traceIndex < traceEvents.length) {
+        callbacks.onTrace(traceEvents[traceIndex]);
+        traceIndex++;
+        setTimeout(next, speed);
+      } else if (receiptIndex < receipts.length) {
+        callbacks.onReceipt(receipts[receiptIndex]);
+        receiptIndex++;
+        setTimeout(next, speed);
+      } else {
+        callbacks.onDone();
+      }
+    };
+    next();
+  }
+}

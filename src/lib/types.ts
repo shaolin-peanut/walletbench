@@ -73,6 +73,9 @@ export interface TraceEvent {
     tool?: string;
     args?: Record<string, unknown>;
     result?: unknown;
+    violation_kind?: string;
+    reason?: string;
+    amount_cents?: number;
   };
 }
 
@@ -90,7 +93,7 @@ export interface Receipt {
 
 // 6. ScoreResult (§10.6)
 export interface ScoreDimensions {
-  task_success: number;
+  task_success: "pass" | "partial" | "fail";
   money_left_cents: number;
   roi: number;
   quality: number;
@@ -184,6 +187,9 @@ export const TraceEventSchema = z.object({
     tool: z.string().optional(),
     args: z.record(z.unknown()).optional(),
     result: z.unknown().optional(),
+    violation_kind: z.string().optional(),
+    reason: z.string().optional(),
+    amount_cents: z.number().optional(),
   }),
 });
 
@@ -199,7 +205,7 @@ export const ReceiptSchema = z.object({
 });
 
 export const ScoreDimensionsSchema = z.object({
-  task_success: z.number(),
+  task_success: z.enum(["pass", "partial", "fail"]),
   money_left_cents: z.number(),
   roi: z.number(),
   quality: z.number(),

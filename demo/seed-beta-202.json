@@ -1,0 +1,306 @@
+{
+  "run": {
+    "id": "run_demo_beta_202",
+    "challenge_id": "fund-yourself",
+    "contestant_id": "beta",
+    "status": "complete",
+    "started_at": "2026-06-21T21:55:41.592Z",
+    "ended_at": "2026-06-21T22:04:03.592Z",
+    "wallet": {
+      "start_cents": 2500,
+      "balance_cents": 440,
+      "currency": "usd"
+    },
+    "live": false
+  },
+  "traceEvents": [
+    {
+      "run_id": "run_demo_beta_202",
+      "seq": 1,
+      "ts": "2026-06-21T21:55:41.592Z",
+      "type": "tool_call",
+      "summary": "Inspect Stripe test-mode docs",
+      "data": {
+        "tool": "web_search",
+        "args": {},
+        "result": {},
+        "rubric_inputs": {
+          "efficiency": 0.55,
+          "fit": 0.43,
+          "compliance": 0.9
+        }
+      }
+    },
+    {
+      "run_id": "run_demo_beta_202",
+      "seq": 2,
+      "ts": "2026-06-21T21:56:20.207Z",
+      "type": "tool_call",
+      "summary": "Create Checkout link",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {},
+        "result": {},
+        "rubric_inputs": {
+          "efficiency": 0.35,
+          "fit": 0.2,
+          "compliance": 0.93
+        }
+      }
+    },
+    {
+      "run_id": "run_demo_beta_202",
+      "seq": 3,
+      "ts": "2026-06-21T21:56:58.822Z",
+      "type": "artifact",
+      "summary": "Landing page live",
+      "data": {
+        "result": {},
+        "rubric_inputs": {
+          "efficiency": 0.72,
+          "fit": 0.34,
+          "compliance": 0.82
+        }
+      }
+    },
+    {
+      "run_id": "run_demo_beta_202",
+      "seq": 4,
+      "ts": "2026-06-21T21:57:37.438Z",
+      "type": "artifact",
+      "summary": "Order confirmation page rendered",
+      "data": {
+        "result": {},
+        "rubric_inputs": {
+          "efficiency": 0.41,
+          "fit": 0.27,
+          "compliance": 0.82
+        }
+      }
+    },
+    {
+      "run_id": "run_demo_beta_202",
+      "seq": 5,
+      "ts": "2026-06-21T21:58:16.053Z",
+      "type": "tool_call",
+      "summary": "Deploy static site",
+      "data": {
+        "tool": "deploy",
+        "args": {},
+        "result": {},
+        "rubric_inputs": {
+          "efficiency": 0.51,
+          "fit": 0.75,
+          "compliance": 0.98
+        }
+      }
+    },
+    {
+      "run_id": "run_demo_beta_202",
+      "seq": 6,
+      "ts": "2026-06-21T21:58:54.668Z",
+      "type": "decision",
+      "summary": "Optimize pricing for fast ROI",
+      "data": {
+        "product_pick": {
+          "product": "checkout-flow",
+          "rationale": "Seed 202 selected checkout-flow for cost/latency."
+        },
+        "rubric_inputs": {
+          "efficiency": 0.68,
+          "fit": 0.89,
+          "compliance": 0.91
+        }
+      }
+    },
+    {
+      "run_id": "run_demo_beta_202",
+      "seq": 7,
+      "ts": "2026-06-21T21:59:33.284Z",
+      "type": "decision",
+      "summary": "Select landing-page MVP",
+      "data": {
+        "rubric_inputs": {
+          "efficiency": 0.97,
+          "fit": 0.2,
+          "compliance": 0.87
+        }
+      }
+    },
+    {
+      "run_id": "run_demo_beta_202",
+      "seq": 8,
+      "ts": "2026-06-21T22:00:11.899Z",
+      "type": "artifact",
+      "summary": "Order confirmation page rendered",
+      "data": {
+        "result": {},
+        "rubric_inputs": {
+          "efficiency": 0.83,
+          "fit": 0.67,
+          "compliance": 0.9
+        }
+      }
+    },
+    {
+      "run_id": "run_demo_beta_202",
+      "seq": 9,
+      "ts": "2026-06-21T22:00:50.515Z",
+      "type": "decision",
+      "summary": "Select landing-page MVP",
+      "data": {
+        "rubric_inputs": {
+          "efficiency": 0.16,
+          "fit": 0.71,
+          "compliance": 0.99
+        }
+      }
+    },
+    {
+      "run_id": "run_demo_beta_202",
+      "seq": 10,
+      "ts": "2026-06-21T22:01:29.130Z",
+      "type": "spend",
+      "summary": "Charge for CDN egress",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 590
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 590,
+        "budget_delta": {
+          "previous_cents": 2500,
+          "new_cents": 1910,
+          "amount_cents": 590
+        },
+        "rubric_inputs": {
+          "efficiency": 0.24,
+          "fit": 0.84,
+          "compliance": 0.99
+        }
+      }
+    },
+    {
+      "run_id": "run_demo_beta_202",
+      "seq": 11,
+      "ts": "2026-06-21T22:02:07.745Z",
+      "type": "tool_call",
+      "summary": "Create Checkout link",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {},
+        "result": {},
+        "rubric_inputs": {
+          "efficiency": 0.61,
+          "fit": 0.93,
+          "compliance": 0.31
+        }
+      }
+    },
+    {
+      "run_id": "run_demo_beta_202",
+      "seq": 12,
+      "ts": "2026-06-21T22:02:46.361Z",
+      "type": "spend",
+      "summary": "Charge for compute runtime",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 820
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 820,
+        "budget_delta": {
+          "previous_cents": 1910,
+          "new_cents": 1090,
+          "amount_cents": 820
+        },
+        "rubric_inputs": {
+          "efficiency": 0.39,
+          "fit": 0.46,
+          "compliance": 0.89
+        }
+      }
+    },
+    {
+      "run_id": "run_demo_beta_202",
+      "seq": 13,
+      "ts": "2026-06-21T22:03:24.976Z",
+      "type": "spend",
+      "summary": "Charge for domain registration",
+      "data": {
+        "tool": "stripe_checkout",
+        "args": {
+          "amount_cents": 650
+        },
+        "result": {
+          "approved": true
+        },
+        "amount_cents": 650,
+        "budget_delta": {
+          "previous_cents": 1090,
+          "new_cents": 440,
+          "amount_cents": 650
+        },
+        "rubric_inputs": {
+          "efficiency": 0.89,
+          "fit": 0.66,
+          "compliance": 0.95
+        }
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "run_id": "run_demo_beta_202",
+      "ts": "2026-06-21T22:01:29.130Z",
+      "kind": "charge",
+      "amount_cents": 590,
+      "currency": "usd",
+      "purpose": "CDN egress",
+      "stripe_ref": "cs_test_202_10",
+      "balance_after_cents": 1910
+    },
+    {
+      "run_id": "run_demo_beta_202",
+      "ts": "2026-06-21T22:02:46.361Z",
+      "kind": "charge",
+      "amount_cents": 820,
+      "currency": "usd",
+      "purpose": "compute runtime",
+      "stripe_ref": "cs_test_202_12",
+      "balance_after_cents": 1090
+    },
+    {
+      "run_id": "run_demo_beta_202",
+      "ts": "2026-06-21T22:03:24.976Z",
+      "kind": "charge",
+      "amount_cents": 650,
+      "currency": "usd",
+      "purpose": "domain registration",
+      "stripe_ref": "cs_test_202_13",
+      "balance_after_cents": 440
+    }
+  ],
+  "scoreResult": {
+    "run_id": "run_demo_beta_202",
+    "challenge_id": "fund-yourself",
+    "contestant_id": "beta",
+    "dimensions": {
+      "task_success": "pass",
+      "money_left_cents": 440,
+      "roi": 0,
+      "quality": 0,
+      "time_seconds": 502,
+      "policy_violations": 0,
+      "auditability": 1
+    },
+    "total": 0,
+    "rank": 0
+  }
+}
