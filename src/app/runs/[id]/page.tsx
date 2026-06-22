@@ -158,6 +158,13 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
       if (run.live && run.status === "running") {
         const latest = fixtures.getTraceEvents(run.id);
         setEvents(latest);
+        const latestReceipts = fixtures
+          .getReceipts(run.id)
+          .sort(
+            (a, b) =>
+              new Date(a.ts).getTime() - new Date(b.ts).getTime()
+          );
+        setReceipts(latestReceipts);
       }
     }, 1000);
     return () => clearInterval(interval);
