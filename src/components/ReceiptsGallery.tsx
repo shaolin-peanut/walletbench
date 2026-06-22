@@ -24,6 +24,13 @@ function redFlag(value: number, threshold = 0.6) {
   return value < threshold;
 }
 
+function toNumeric(value: number | "pass" | "partial" | "fail"): number {
+  if (typeof value === "number") return value;
+  if (value === "pass") return 1;
+  if (value === "partial") return 0.5;
+  return 0;
+}
+
 function ReceiptCard({
   contestant,
   receipts,
@@ -60,7 +67,8 @@ function ReceiptCard({
               { label: "auditability", value: score.dimensions.auditability },
             ] as const
           ).map((entry) => {
-            const isFlagged = redFlag(entry.value);
+            const raw = toNumeric(entry.value);
+            const isFlagged = redFlag(raw);
             return (
               <div
                 key={entry.label}
@@ -71,7 +79,7 @@ function ReceiptCard({
                 }`}
               >
                 <span className="capitalize">{entry.label.replace(/_/g, " ")}</span>
-                <span className="font-mono font-semibold">{(entry.value * 100).toFixed(0)}%</span>
+                <span className="font-mono font-semibold">{(raw * 100).toFixed(0)}%</span>
               </div>
             );
           })}

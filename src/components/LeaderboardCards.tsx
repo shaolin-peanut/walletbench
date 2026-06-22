@@ -13,6 +13,12 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
+function taskSuccessToNumber(value: string): number {
+  if (value === "pass") return 1;
+  if (value === "partial") return 0.5;
+  return 0;
+}
+
 function MetricBar({
   label,
   value,
@@ -80,7 +86,7 @@ export function LeaderboardCards({ data }: { data: ScoreResult[] }) {
               />
               <MetricBar
                 label="fit"
-                value={row.dimensions.task_success}
+                value={taskSuccessToNumber(row.dimensions.task_success)}
                 color="bg-sky-400"
               />
               <MetricBar
