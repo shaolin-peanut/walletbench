@@ -1,0 +1,20 @@
+export const runtime = "edge";
+
+export const size = { width: 32, height: 32 };
+export const contentType = "image/svg+xml";
+
+export default function Icon() {
+  return new Response(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <rect width="32" height="32" rx="8" fill="#0f172a"/>
+      <path d="M6 10 L10 22 L16 14 L22 22 L26 10" stroke="url(#g)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#6366f1"/>
+          <stop offset="100%" stop-color="#a855f7"/>
+        </linearGradient>
+      </defs>
+    </svg>`,
+    { headers: { "Content-Type": "image/svg+xml" } }
+  );
+}

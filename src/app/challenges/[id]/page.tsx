@@ -3,14 +3,19 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { Challenge } from "@/lib/types";
+import { Spinner } from "@/components/Spinner";
 
 function fmtBudget(cents: number, currency: string) {
   return `${(cents / 100).toFixed(2)} ${currency.toUpperCase()}`;
 }
 
 function fmtTime(seconds: number) {
-  const m = Math.floor(seconds / 60);
-  return `${m}m`;
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  if (h > 0) return `${h}h ${m}m ${s}s`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -64,8 +69,10 @@ export default function ChallengeDetailPage({ params }: { params: { id: string }
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-50 p-6 md:p-8">
-        <div className="mx-auto max-w-3xl">Loading challenge…</div>
+      <main className="min-h-screen bg-gray-950 p-6 md:p-8">
+        <div className="mx-auto max-w-3xl flex items-center justify-center">
+          <Spinner className="h-6 w-6 text-indigo-400" />
+        </div>
       </main>
     );
   }

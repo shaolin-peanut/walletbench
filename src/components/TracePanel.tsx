@@ -14,7 +14,12 @@ const REPLAY_SPEEDS = [
 
 function formatTime(ts: string): string {
   const d = new Date(ts);
-  return d.toLocaleTimeString("en-US", { hour12: false });
+  return d.toLocaleTimeString("en-US", {
+    hour12: false,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
 }
 
 function relativeTime(ts: string): string {
@@ -28,11 +33,11 @@ function relativeTime(ts: string): string {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  decision: "bg-blue-100 text-blue-700 border-blue-300",
-  tool_call: "bg-green-100 text-green-700 border-green-300",
-  spend: "bg-amber-100 text-amber-700 border-amber-300",
-  artifact: "bg-purple-100 text-purple-700 border-purple-300",
-  policy_violation: "bg-red-100 text-red-700 border-red-300",
+  decision: "bg-blue-500/15 text-blue-300 border-blue-500/30",
+  tool_call: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+  spend: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+  artifact: "bg-violet-500/15 text-violet-300 border-violet-500/30",
+  policy_violation: "bg-red-500/15 text-red-300 border-red-500/30",
 };
 
 export function TracePanel({ events: externalEvents }: { events?: TraceEvent[] } = {}) {
@@ -44,6 +49,9 @@ export function TracePanel({ events: externalEvents }: { events?: TraceEvent[] }
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const bottomRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const visibleEvents = selectedRun === "all"
+    ? events
+    : events.filter((e) => e.run_id === selectedRun);
 
   useEffect(() => {
     if (externalEvents) {
@@ -54,11 +62,11 @@ export function TracePanel({ events: externalEvents }: { events?: TraceEvent[] }
   }, [externalEvents]);
 
   useEffect(() => {
-    if (isReplaying && replayIndex < events.length - 1) {
+    if (isReplaying && replayIndex < visibleEvents.length - 1) {
       intervalRef.current = setTimeout(() => {
         setReplayIndex((i) => i + 1);
       }, speed);
-    } else if (replayIndex >= events.length - 1) {
+    } else if (replayIndex >= visibleEvents.length - 1) {
       setIsReplaying(false);
     }
     return () => {
@@ -66,7 +74,7 @@ export function TracePanel({ events: externalEvents }: { events?: TraceEvent[] }
         clearTimeout(intervalRef.current);
       }
     };
-  }, [isReplaying, replayIndex, events.length, speed]);
+  }, [isReplaying, replayIndex, visibleEvents.length, speed]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -100,10 +108,6 @@ export function TracePanel({ events: externalEvents }: { events?: TraceEvent[] }
       clearTimeout(intervalRef.current);
     }
   };
-
-  const visibleEvents = selectedRun === "all"
-    ? events
-    : events.filter((e) => e.run_id === selectedRun);
 
   const displayEvents = replayIndex >= 0 ? visibleEvents.slice(0, replayIndex + 1) : visibleEvents;
 

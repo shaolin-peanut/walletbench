@@ -16,6 +16,7 @@ import {
   Pause,
   Repeat2,
 } from "lucide-react";
+import { Spinner } from "@/components/Spinner";
 import {
   Area,
   AreaChart,
@@ -114,7 +115,7 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
     : [];
 
   function formatTime(ts: string): string {
-    return new Date(ts).toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit" });
+    return new Date(ts).toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
   }
 
   const burnData = useMemo(() => {
@@ -261,7 +262,7 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
       controllerRef.current?.stop();
       controllerRef.current = null;
     };
-  }, [mode === "replay"]); // intentionally only effect when mode is replay; we guard runtime below
+  }, [mode]);
 
   // Guard: if replay mode but no active controller and not done, allow re-run
   useEffect(() => {
@@ -288,7 +289,8 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
   if (!run) {
     return (
       <div className="mx-auto max-w-4xl p-6">
-        <div className="rounded-lg border border-gray-200 bg-white p-6 text-center text-gray-700">
+        <div className="rounded-lg border border-gray-800 bg-gray-900 p-6 text-center text-gray-400">
+          <Spinner className="mx-auto mb-2 h-6 w-6 text-indigo-400" />
           Loading run…
         </div>
       </div>

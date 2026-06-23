@@ -1,12 +1,11 @@
 {
-  "task_id": "U4",
   "changed_routes": [
-    "http://localhost:3000/leaderboard",
-    "http://localhost:3000/challenges"
+    "http://localhost:3000/your-changed-route-1",
+    "http://localhost:3000/your-changed-route-2"
   ],
   "screenshots": [
-    "qa-screenshots/leaderboard.png",
-    "qa-screenshots/challenges.png"
+    "qa-screenshots/route-1.png",
+    "qa-screenshots/route-2.png"
   ],
   "build_result": {
     "command": "npm run build",

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo } from "react";
 import { fixtures } from "@/lib/fixtures";
 import type { ScoreResult } from "@/lib/types";
@@ -24,23 +25,28 @@ function MetricBar({
   value,
   max = 1,
   color,
+  allowOverflow = false,
 }: {
   label: string;
   value: number;
   max?: number;
   color: string;
+  allowOverflow?: boolean;
 }) {
-  const pct = Math.min(100, Math.max(0, (value / max) * 100));
+  const pct = allowOverflow
+    ? Math.max(0, (value / max) * 100)
+    : Math.min(100, Math.max(0, (value / max) * 100));
+  const visualPct = Math.min(125, pct);
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between text-xs text-gray-300">
         <span className="capitalize">{label}</span>
         <span>{pct.toFixed(0)}%</span>
       </div>
-      <div className="h-2 w-full rounded-full bg-gray-800">
+      <div className="h-2 w-full rounded-full bg-gray-800 overflow-visible">
         <div
           className={`h-2 rounded-full transition-all duration-1000 ease-out ${color}`}
-          style={{ width: `${pct}%` }}
+          style={{ width: `${visualPct}%` }}
         />
       </div>
     </div>
@@ -63,9 +69,10 @@ export function LeaderboardCards({ data }: { data: ScoreResult[] }) {
         const initials = getInitials(name);
 
         return (
-          <div
+          <Link
             key={row.run_id}
-            className="rounded-xl border border-gray-800 bg-gray-900 p-5 shadow-lg"
+            href={`/runs/${row.run_id}`}
+            className="rounded-xl border border-gray-800 bg-gray-900 p-5 shadow-lg transition hover:border-gray-600 hover:shadow-lg"
           >
             <div className="flex items-center gap-3 mb-4">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-500 text-sm font-bold text-white">
@@ -83,6 +90,7 @@ export function LeaderboardCards({ data }: { data: ScoreResult[] }) {
                 value={row.dimensions.roi}
                 max={1}
                 color="bg-emerald-400"
+                allowOverflow
               />
               <MetricBar
                 label="fit"
@@ -99,7 +107,7 @@ export function LeaderboardCards({ data }: { data: ScoreResult[] }) {
             <div className="mt-4 text-right text-2xl font-bold text-white">
               {(row.total * 100).toFixed(0)}
             </div>
-          </div>
+          </Link>
         );
       })}
     </div>

@@ -1,0 +1,72 @@
+[
+  {
+    "page": "home",
+    "url": "/",
+    "httpStatus": 200,
+    "status": "ok",
+    "screenshot": "qa-screenshots/home.png"
+  },
+  {
+    "page": "leaderboard",
+    "url": "/leaderboard",
+    "httpStatus": 200,
+    "status": "ok",
+    "screenshot": "qa-screenshots/leaderboard.png"
+  },
+  {
+    "page": "challenges",
+    "url": "/challenges",
+    "httpStatus": 200,
+    "status": "ok",
+    "screenshot": "qa-screenshots/challenges.png"
+  },
+  {
+    "page": "challenge-fund-yourself",
+    "url": "/challenges/fund-yourself",
+    "httpStatus": 200,
+    "status": "ok",
+    "screenshot": "qa-screenshots/challenge-fund-yourself.png"
+  },
+  {
+    "page": "run-detail",
+    "url": "/runs/run_001",
+    "httpStatus": 200,
+    "status": "ok",
+    "screenshot": "qa-screenshots/run-detail.png"
+  },
+  {
+    "page": "run-receipts",
+    "url": "/runs/run_001/receipts",
+    "httpStatus": 200,
+    "status": "ok",
+    "screenshot": "qa-screenshots/run-receipts.png"
+  },
+  {
+    "page": "receipts",
+    "url": "/receipts",
+    "httpStatus": 200,
+    "status": "ok",
+    "screenshot": "qa-screenshots/receipts.png"
+  },
+  {
+    "page": "trace",
+    "url": "/trace",
+    "httpStatus": 200,
+    "status": "ok",
+    "screenshot": "qa-screenshots/trace.png"
+  },
+  {
+    "page": "demo",
+    "url": "/demo",
+    "httpStatus": 200,
+    "status": "ok",
+    "screenshot": "qa-screenshots/demo.png"
+  },
+  {
+    "page": "404-unknown",
+    "url": "/this-does-not-exist",
+    "httpStatus": 404,
+    "status": "ok",
+    "screenshot": "qa-screenshots/404-unknown.png"
+  }
+]

@@ -6,6 +6,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "WalletBench",
   description: "Economic evaluation layer for autonomous agents",
+  icons: { icon: "/favicon.svg" },
 };
 
 export default function RootLayout({

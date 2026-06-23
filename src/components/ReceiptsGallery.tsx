@@ -100,7 +100,9 @@ function ReceiptCard({
           >
             <div>
               <p className="text-xs font-medium text-gray-200">{r.purpose}</p>
-              <p className="text-[10px] text-gray-500">{r.ts}</p>
+              <p className="text-[10px] text-gray-500">
+                {new Date(r.ts).toLocaleString("en-US", { dateStyle: "short", timeStyle: "medium" })}
+              </p>
               <p className="text-[10px] text-gray-600">{r.stripe_ref}</p>
             </div>
             <div className="text-right">
