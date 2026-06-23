@@ -20,6 +20,24 @@ Gate before any lane reaches Done.
 - [ ] `/runs/[id]` trace timeline renders all §10.4 event types (`decision`, `tool_call`, `spend`, `artifact`, `policy_violation`) in `seq` order.
 - [ ] `/runs/[id]/receipts` renders `Receipt` cards showing amount, purpose, stripe_ref, and balance.
 
+### Visual Evidence Gate
+
+For any Surface task that changes UI or claims a visual fix, the builder must submit a `SURFACE_GATE_MANIFEST.json` in the workspace root that satisfies all five of the following before the Reviewer can mark the task Done:
+
+1. **Screenshots** — ≥2 full-viewport screenshots from the changed routes (file paths must exist).
+2. **Route URLs** — Exact URLs used (with protocol + port) for each screenshot.
+3. **Build result** — Exact build command and `exit_status` of `pass` or `fail`. If `fail`, include error output.
+4. **Console/runtime errors** — Arrays for `console_errors` and `runtime_errors` captured during the screenshot run.
+5. **Styling verification** — Explicit statement of whether the result is “Genuine UI output” or a “Degraded asset/runtime path.”
+
+Reviewer validation command:
+
+```bash
+node scripts/surface-gate-check.js /path/to/SURFACE_GATE_MANIFEST.json
+```
+
+If the manifest is missing or fails validation, the Reviewer blocks the task and requests a corrected evidence package.
+
 ## Integration
 
 - [ ] `curl -s http://localhost:3000/api/health` returns `{ "status": "ok", "service": "walletbench" }`.
