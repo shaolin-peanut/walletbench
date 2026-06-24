@@ -6,9 +6,7 @@ if (!secretKey) {
   console.warn("STRIPE_TEST_SECRET_KEY not set; Stripe client unavailable");
 }
 
-export const stripe = secretKey
-  ? new Stripe(secretKey, { apiVersion: "2024-04-10" as Stripe.LatestApiVersion })
-  : null;
+export const stripe = secretKey ? new Stripe(secretKey) : null;
 
 export function isStripeEnabled(): boolean {
   return !!stripe;
