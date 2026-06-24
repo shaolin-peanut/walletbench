@@ -1,0 +1,23 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/challenges/[id]/route": "app/api/challenges/[id]/route.js",
+  "/api/challenges/route": "app/api/challenges/route.js",
+  "/api/leaderboard/route": "app/api/leaderboard/route.js",
+  "/api/health/route": "app/api/health/route.js",
+  "/api/policy/check/route": "app/api/policy/check/route.js",
+  "/api/receipts/route": "app/api/receipts/route.js",
+  "/api/runs/[id]/receipts/route": "app/api/runs/[id]/receipts/route.js",
+  "/api/runs/[id]/route": "app/api/runs/[id]/route.js",
+  "/api/runs/[id]/trace/route": "app/api/runs/[id]/trace/route.js",
+  "/api/runs/route": "app/api/runs/route.js",
+  "/api/webhooks/stripe/route": "app/api/webhooks/stripe/route.js",
+  "/challenges/[id]/page": "app/challenges/[id]/page.js",
+  "/challenges/page": "app/challenges/page.js",
+  "/leaderboard/page": "app/leaderboard/page.js",
+  "/page": "app/page.js",
+  "/receipts/page": "app/receipts/page.js",
+  "/runs/[id]/receipts/page": "app/runs/[id]/receipts/page.js",
+  "/trace/page": "app/trace/page.js",
+  "/demo/page": "app/demo/page.js",
+  "/runs/[id]/page": "app/runs/[id]/page.js"
+}

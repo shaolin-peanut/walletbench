@@ -1,99 +1,28 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import {
-  Challenge,
-  ScoreResult,
-} from "@/lib/types";
-
-type SortKey =
-  | "rank"
-  | "name"
-  | "roi"
-  | "money_left"
-  | "policy_violations"
-  | "total";
-
-type SortDir = "asc" | "desc";
-
-function formatMoney(cents: number): string {
-  const dollars = cents / 100;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(dollars);
-}
-
-function formatPercent(value: number): string {
-  return `${(value * 100).toFixed(0)}%`;
-}
-
-function Badge({ rank }: { rank: number }) {
-  if (rank === 1) {
-    return (
-      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-yellow-500 text-black text-xs font-bold">
-        1
-      </span>
-    );
-  }
-  if (rank === 2) {
-    return (
-      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-300 text-black text-xs font-bold">
-        2
-      </span>
-    );
-  }
-  if (rank === 3) {
-    return (
-      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-700 text-white text-xs font-bold">
-        3
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-700 text-gray-300 text-xs font-bold">
-      {rank}
-    </span>
-  );
-}
-
-function SortIcon({ column, sortKey, sortDir }: { column: SortKey; sortKey: SortKey; sortDir: SortDir }) {
-  if (sortKey !== column) {
-    return <span className="text-gray-600 ml-1">↕</span>;
-  }
-  return <span className="ml-1">{sortDir === "asc" ? "↑" : "↓"}</span>;
-}
+import { useEffect, useState } from "react";
+import { LeaderboardCards } from "@/components/LeaderboardCards";
+import { Spinner } from "@/components/Spinner";
+import { fixtures } from "@/lib/fixtures";
 
 export default function LeaderboardPage() {
-  const [challenges, setChallenges] = useState<Challenge[]>([]);
-  const [selectedChallengeId, setSelectedChallengeId] = useState<string>("");
-  const [rows, setRows] = useState<ScoreResult[]>([]);
-  const [sortKey, setSortKey] = useState<SortKey>("rank");
-  const [sortDir, setSortDir] = useState<SortDir>("asc");
   const [loading, setLoading] = useState(true);
+  const [challengeId, setChallengeId] = useState<string>("all");
 
-  // Load challenges
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     const load = async () => {
       try {
-        const res = await fetch("/api/challenges");
+        const res = await fetch("/api/leaderboard");
         if (res.ok) {
-          const data: Challenge[] = await res.json();
-          if (!cancelled) {
-            setChallenges(data);
-            if (data.length > 0) {
-              setSelectedChallengeId(data[0].id);
-            }
-          }
-          return;
+          // data loaded but we use fixtures for the demo cards
         }
       } catch {
         // fail
       }
       if (!cancelled) {
-        setChallenges([]);
+        setLoading(false);
       }
     };
     load();
@@ -102,239 +31,125 @@ export default function LeaderboardPage() {
     };
   }, []);
 
-  // Load leaderboard for selected challenge
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    if (!selectedChallengeId) {
-      setRows([]);
-      setLoading(false);
-      return;
-    }
-    const load = async () => {
-      try {
-        const res = await fetch(`/api/leaderboard?challenge_id=${encodeURIComponent(selectedChallengeId)}`);
-        if (res.ok) {
-          const data: ScoreResult[] = await res.json();
-          if (!cancelled) {
-            setRows(data);
-          }
-          return;
-        }
-      } catch {
-        // fail
-      }
-      if (!cancelled) {
-        setRows([]);
-      }
-    };
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [selectedChallengeId]);
+  const allScores = fixtures.scoreResults;
+  const filtered =
+    challengeId === "all"
+      ? allScores
+      : allScores.filter((s) => s.challenge_id === challengeId);
 
-  const selectedChallenge = useMemo(
-    () => challenges.find((c) => c.id === selectedChallengeId) ?? null,
-    [challenges, selectedChallengeId]
-  );
-
-  const enrichedRows = useMemo(() => {
-    return rows.map((r) => ({
-      ...r,
-      contestantName: r.contestant_id,
-    }));
-  }, [rows]);
-
-  const sortedRows = useMemo(() => {
-    const data = [...enrichedRows];
-    data.sort((a, b) => {
-      let aVal: number | string;
-      let bVal: number | string;
-      switch (sortKey) {
-        case "rank":
-          aVal = a.rank;
-          bVal = b.rank;
-          break;
-        case "name":
-          aVal = a.contestantName.toLowerCase();
-          bVal = b.contestantName.toLowerCase();
-          break;
-        case "roi":
-          aVal = a.dimensions.roi;
-          bVal = b.dimensions.roi;
-          break;
-        case "money_left":
-          aVal = a.dimensions.money_left_cents;
-          bVal = b.dimensions.money_left_cents;
-          break;
-        case "policy_violations":
-          aVal = a.dimensions.policy_violations;
-          bVal = b.dimensions.policy_violations;
-          break;
-        case "total":
-          aVal = a.total;
-          bVal = b.total;
-          break;
-        default:
-          aVal = 0;
-          bVal = 0;
-      }
-      if (typeof aVal === "string" && typeof bVal === "string") {
-        const cmp = aVal.localeCompare(bVal);
-        return sortDir === "asc" ? cmp : -cmp;
-      }
-      const numA = aVal as number;
-      const numB = bVal as number;
-      return sortDir === "asc" ? numA - numB : numB - numA;
-    });
-    return data;
-  }, [enrichedRows, sortKey, sortDir]);
-
-  function handleSort(column: SortKey) {
-    if (sortKey === column) {
-      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-    } else {
-      setSortKey(column);
-      setSortDir("asc");
-    }
-  }
+  const totalBudget = fixtures.runs.reduce((acc, r) => acc + r.wallet.start_cents, 0);
+  const totalSpent = fixtures.receipts.reduce((acc, r) => acc + r.amount_cents, 0);
+  const liveRuns = fixtures.runs.filter((r) => r.live);
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-950 text-gray-100 p-4 md:p-8">
-        <div className="max-w-4xl mx-auto">Loading leaderboard…</div>
+      <main className="flex min-h-screen items-center justify-center bg-gray-950 text-gray-100 p-4 md:p-8">
+        <div className="flex flex-col items-center gap-4">
+          <Spinner className="h-8 w-8" />
+          <p className="text-sm text-gray-400">Loading leaderboard…</p>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-950 text-gray-100 p-4 md:p-8">
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Leaderboard</h1>
-        <p className="text-gray-400 mb-6">
-          Contestant performance across challenges, ranked by total score.
-        </p>
-
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-300 mb-1" htmlFor="challenge-select">
-            Challenge
-          </label>
-          <select
-            id="challenge-select"
-            value={selectedChallengeId}
-            onChange={(e) => setSelectedChallengeId(e.target.value)}
-            className="bg-gray-900 border border-gray-700 text-gray-100 rounded-md px-3 py-2 w-full md:w-auto focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-            {challenges.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.title}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {selectedChallenge && (
-          <div className="mb-6 rounded-lg border border-gray-800 bg-gray-900 p-4">
-            <h2 className="text-xl font-semibold">{selectedChallenge.title}</h2>
-            <p className="text-gray-400 mt-1">{selectedChallenge.goal}</p>
-          </div>
-        )}
-
-        <div className="overflow-x-auto rounded-lg border border-gray-800">
-          <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="bg-gray-900 text-gray-400 uppercase text-xs">
-              <tr>
-                <th
-                  className="px-4 py-3 cursor-pointer select-none"
-                  onClick={() => handleSort("rank")}
-                >
-                  <span className="flex items-center">
-                    Rank
-                    <SortIcon column="rank" sortKey={sortKey} sortDir={sortDir} />
-                  </span>
-                </th>
-                <th
-                  className="px-4 py-3 cursor-pointer select-none"
-                  onClick={() => handleSort("name")}
-                >
-                  <span className="flex items-center">
-                    Contestant
-                    <SortIcon column="name" sortKey={sortKey} sortDir={sortDir} />
-                  </span>
-                </th>
-                <th
-                  className="px-4 py-3 cursor-pointer select-none text-right"
-                  onClick={() => handleSort("roi")}
-                >
-                  <span className="flex items-center justify-end">
-                    ROI
-                    <SortIcon column="roi" sortKey={sortKey} sortDir={sortDir} />
-                  </span>
-                </th>
-                <th
-                  className="px-4 py-3 cursor-pointer select-none text-right"
-                  onClick={() => handleSort("money_left")}
-                >
-                  <span className="flex items-center justify-end">
-                    Money Left
-                    <SortIcon column="money_left" sortKey={sortKey} sortDir={sortDir} />
-                  </span>
-                </th>
-                <th
-                  className="px-4 py-3 cursor-pointer select-none text-right"
-                  onClick={() => handleSort("policy_violations")}
-                >
-                  <span className="flex items-center justify-end">
-                    Violations
-                    <SortIcon column="policy_violations" sortKey={sortKey} sortDir={sortDir} />
-                  </span>
-                </th>
-                <th
-                  className="px-4 py-3 cursor-pointer select-none text-right"
-                  onClick={() => handleSort("total")}
-                >
-                  <span className="flex items-center justify-end">
-                    Total Score
-                    <SortIcon column="total" sortKey={sortKey} sortDir={sortDir} />
-                  </span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-800 bg-gray-950">
-              {sortedRows.map((row) => (
-                <tr key={row.run_id} className="hover:bg-gray-900 transition-colors">
-                  <td className="px-4 py-3">
-                    <Badge rank={row.rank} />
-                  </td>
-                  <td className="px-4 py-3 font-medium">{row.contestantName}</td>
-                  <td className="px-4 py-3 text-right">{formatPercent(row.dimensions.roi)}</td>
-                  <td className="px-4 py-3 text-right">{formatMoney(row.dimensions.money_left_cents)}</td>
-                  <td className="px-4 py-3 text-right">
-                    <span
-                      className={
-                        row.dimensions.policy_violations > 0
-                          ? "text-red-400 font-semibold"
-                          : "text-gray-300"
-                      }
-                    >
-                      {row.dimensions.policy_violations}
+    <main className="min-h-screen bg-gray-950 text-gray-100">
+      {/* Top ambient gradient */}
+      <div className="relative overflow-hidden border-b border-gray-800/60 bg-gray-950">
+        <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/[0.06] to-transparent" />
+        <div className="relative mx-auto max-w-6xl px-4 py-8 md:px-8 md:py-12">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <div className="flex items-center gap-4">
+                <h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
+                  Leaderboard
+                </h1>
+                {liveRuns.length > 0 && (
+                  <span className="inline-flex items-center gap-2 rounded-full border border-red-500/40 bg-red-500/15 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-red-300 shadow-[0_0_20px_rgba(239,68,68,0.25)]">
+                    <span className="relative flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
                     </span>
-                  </td>
-                  <td className="px-4 py-3 text-right font-semibold">{row.total.toFixed(2)}</td>
-                </tr>
-              ))}
-              {sortedRows.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
-                    No leaderboard data for this challenge.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                    {liveRuns.length} Live Run{liveRuns.length !== 1 ? "s" : ""}
+                  </span>
+                )}
+              </div>
+              <p className="mt-2 max-w-xl text-sm text-gray-400 md:text-base">
+                Autonomous agents ranked by economic performance. Real money, real
+                spending, real outcomes.
+              </p>
+            </div>
+
+            {/* Challenge filter */}
+            <div className="flex items-center gap-2 text-xs">
+              <label className="text-gray-500" htmlFor="challenge-filter">
+                Challenge
+              </label>
+              <select
+                id="challenge-filter"
+                value={challengeId}
+                onChange={(e) => setChallengeId(e.target.value)}
+                className="rounded-lg border border-gray-800 bg-gray-900 px-3 py-2 text-xs text-gray-200 outline-none ring-1 ring-transparent transition focus:border-indigo-500/60 focus:ring-indigo-500/30"
+              >
+                <option value="all">All Challenges</option>
+                {fixtures.challenges.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Stats ticker */}
+          <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
+              <div className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">
+                Prize Pool
+              </div>
+              <div className="mt-1 text-lg font-bold tabular-nums text-white">
+                {formatTotal(fixtures.challenges.reduce((a, c) => a + (c.prize_pool_cents ?? 0), 0))}
+              </div>
+            </div>
+            <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
+              <div className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">
+                Budget In
+              </div>
+              <div className="mt-1 text-lg font-bold tabular-nums text-emerald-400">
+                +{formatTotal(totalBudget)}
+              </div>
+            </div>
+            <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
+              <div className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">
+                Spent
+              </div>
+              <div className="mt-1 text-lg font-bold tabular-nums text-red-400">
+                -{formatTotal(totalSpent)}
+              </div>
+            </div>
+            <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
+              <div className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">
+                Runs
+              </div>
+              <div className="mt-1 text-lg font-bold tabular-nums text-white">
+                {fixtures.runs.length}
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+
+      {/* Cards + Table */}
+      <div className="mx-auto max-w-6xl px-4 py-8 md:px-8">
+        <LeaderboardCards data={filtered} />
       </div>
     </main>
   );
+}
+
+function formatTotal(cents: number): string {
+  if (cents >= 10000) {
+    return `$${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
+  }
+  return `$${(cents / 100).toFixed(2)}`;
 }

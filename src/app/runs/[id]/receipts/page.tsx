@@ -1,320 +1,304 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
+import { useMemo } from "react";
 import {
-  AreaChart,
   Area,
+  AreaChart,
+  CartesianGrid,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from "recharts";
+import { ArrowLeft, BadgeDollarSign, CreditCard, ReceiptText, TrendingUp, Wallet } from "lucide-react";
+import { fixtures } from "@/lib/fixtures";
 import type { Receipt } from "@/lib/types";
 
-const KIND_STYLES: Record<Receipt["kind"], { bg: string; text: string; symbol: string }> = {
-  charge: { bg: "bg-red-50", text: "text-red-700", symbol: "−" },
-  payout: { bg: "bg-emerald-50", text: "text-emerald-700", symbol: "+" },
-  refund: { bg: "bg-sky-50", text: "text-sky-700", symbol: "↩" },
+function formatCents(cents: number, currency = "usd"): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+  }).format(cents / 100);
+}
+
+function formatTime(ts: string): string {
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).format(new Date(ts));
+}
+
+function signedAmount(receipt: Receipt): number {
+  return receipt.kind === "charge" ? -receipt.amount_cents : receipt.amount_cents;
+}
+
+const KIND_STYLES: Record<Receipt["kind"], string> = {
+  charge: "border-red-500/30 bg-red-500/10 text-red-200",
+  payout: "border-emerald-500/30 bg-emerald-500/10 text-emerald-200",
+  refund: "border-sky-500/30 bg-sky-500/10 text-sky-200",
 };
 
-function fmtCents(cents: number, currency: string) {
-  return `${(cents / 100).toFixed(2)} ${currency.toUpperCase()}`;
-}
+const KIND_SYMBOL: Record<Receipt["kind"], string> = {
+  charge: "−",
+  payout: "+",
+  refund: "↺",
+};
 
-function fmtTs(ts: string) {
-  const d = new Date(ts);
-  return d.toLocaleString();
-}
+export default function RunReceiptsPage({ params }: { params: { id: string } }) {
+  const run = fixtures.getRun(params.id);
 
-function truncateRef(ref: string, max = 12) {
-  if (ref.length <= max) return ref;
-  return `${ref.slice(0, max)}…`;
-}
+  const model = useMemo(() => {
+    if (!run) return null;
+    const receipts = fixtures
+      .getReceipts(run.id)
+      .slice()
+      .sort((a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime());
 
-function Badge({ kind }: { kind: Receipt["kind"] }) {
-  const style = KIND_STYLES[kind];
-  return (
-    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${style.bg} ${style.text}`}>
-      {style.symbol} {kind}
-    </span>
-  );
-}
+    const burnData = [
+      {
+        label: "Start",
+        ts: run.started_at,
+        balance: run.wallet.start_cents,
+        delta: 0,
+        purpose: "Wallet opened",
+      },
+      ...receipts.map((receipt) => ({
+        label: formatTime(receipt.ts),
+        ts: receipt.ts,
+        balance: receipt.balance_after_cents,
+        delta: signedAmount(receipt),
+        purpose: receipt.purpose,
+      })),
+    ];
 
-function ReceiptCard({ receipt }: { receipt: Receipt }) {
-  const { kind, amount_cents, currency, purpose, ts, stripe_ref, balance_after_cents } = receipt;
-  const signed = kind === "charge" ? -amount_cents : kind === "payout" ? amount_cents : 0;
-  const display = Math.abs(amount_cents);
+    const totalCharges = receipts
+      .filter((receipt) => receipt.kind === "charge")
+      .reduce((sum, receipt) => sum + receipt.amount_cents, 0);
+    const totalCredits = receipts
+      .filter((receipt) => receipt.kind !== "charge")
+      .reduce((sum, receipt) => sum + receipt.amount_cents, 0);
+    const netDelta = receipts.reduce((sum, receipt) => sum + signedAmount(receipt), 0);
+    const finalBalance = receipts.at(-1)?.balance_after_cents ?? run.wallet.balance_cents;
+    const contestant = fixtures.contestants.find((c) => c.id === run.contestant_id);
+    const challenge = fixtures.challenges.find((c) => c.id === run.challenge_id);
 
-  return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-      <div className="flex items-center justify-between">
-        <Badge kind={kind} />
-        <span className={`text-sm font-semibold ${signed < 0 ? "text-red-600" : "text-emerald-600"}`}>
-          {signed < 0 ? "−" : "+"}{fmtCents(display, currency)}
-        </span>
-      </div>
-      <p className="mt-2 text-sm text-gray-800">{purpose}</p>
-      <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
-        <time dateTime={ts}>{fmtTs(ts)}</time>
-        <span className="font-mono">{truncateRef(stripe_ref)}</span>
-      </div>
-      <div className="mt-2 text-xs text-gray-500">
-        Balance after: <span className="font-semibold text-gray-700">{fmtCents(balance_after_cents, currency)}</span>
-      </div>
-    </div>
-  );
-}
+    return { receipts, burnData, totalCharges, totalCredits, netDelta, finalBalance, contestant, challenge };
+  }, [run]);
 
-function BurnChart({ receipts }: { receipts: Receipt[] }) {
-  const data = useMemo(() => {
-    const sorted = [...receipts].sort(
-      (a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime()
-    );
-    return sorted.map((r) => ({
-      ts: new Date(r.ts).getTime(),
-      label: new Date(r.ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      balance_after_cents: r.balance_after_cents,
-      kind: r.kind,
-      amount_cents: r.amount_cents,
-      purpose: r.purpose,
-      stripe_ref: r.stripe_ref,
-      currency: r.currency,
-    }));
-  }, [receipts]);
-
-  if (data.length === 0) {
+  if (!run || !model) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Burn Chart</h3>
-        <p className="mt-2 text-sm text-gray-500">No receipts to display.</p>
-      </div>
-    );
-  }
-
-  const minY = Math.min(...data.map((d) => d.balance_after_cents));
-  const maxY = Math.max(...data.map((d) => d.balance_after_cents));
-  const padding = Math.max((maxY - minY) * 0.1, 50);
-
-  return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-      <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Burn Chart</h3>
-      <div className="mt-4 h-64">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-            <defs>
-              <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-            <XAxis
-              dataKey="ts"
-              tickFormatter={(t) => new Date(t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-              tick={{ fontSize: 12, fill: "#9ca3af" }}
-              axisLine={{ stroke: "#e5e7eb" }}
-              tickLine={{ stroke: "#e5e7eb" }}
-            />
-            <YAxis
-              domain={[Math.max(0, minY - padding), maxY + padding]}
-              tickFormatter={(v) => `${(v / 100).toFixed(0)}`}
-              tick={{ fontSize: 12, fill: "#9ca3af" }}
-              axisLine={{ stroke: "#e5e7eb" }}
-              tickLine={{ stroke: "#e5e7eb" }}
-            />
-            <Tooltip
-              labelFormatter={(label) => new Date(label).toLocaleString()}
-              formatter={(value: number, name: string) => {
-                if (name === "balance_after_cents") {
-                  return [fmtCents(value, "usd"), "Balance"];
-                }
-                return [value, name];
-              }}
-              content={({ active, payload }) => {
-                if (!active || !payload || payload.length === 0) return null;
-                const d = payload[0].payload as typeof data[0];
-                return (
-                  <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-lg">
-                    <p className="text-xs font-semibold text-gray-900">{d.label}</p>
-                    <p className="mt-1 text-xs text-gray-600">Balance: {fmtCents(d.balance_after_cents, d.currency)}</p>
-                    <p className="mt-1 text-xs text-gray-600">
-                      {d.kind}: {fmtCents(d.amount_cents, d.currency)}
-                    </p>
-                    <p className="mt-1 text-xs text-gray-600">{d.purpose}</p>
-                    <p className="mt-1 text-xs font-mono text-gray-500">{truncateRef(d.stripe_ref)}</p>
-                  </div>
-                );
-              }}
-            />
-            <Area
-              type="monotone"
-              dataKey="balance_after_cents"
-              stroke="#4f46e5"
-              strokeWidth={2}
-              fill="url(#balanceGradient)"
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
-  );
-}
-
-function LedgerTable({ receipts }: { receipts: Receipt[] }) {
-  const sorted = useMemo(() => {
-    return [...receipts].sort(
-      (a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime()
-    );
-  }, [receipts]);
-
-  if (sorted.length === 0) {
-    return (
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Spend Ledger</h3>
-        <p className="mt-2 text-sm text-gray-500">No receipts to display.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50">
-            <tr className="text-left text-xs uppercase tracking-wide text-gray-500">
-              <th className="px-4 py-3">Time</th>
-              <th className="px-4 py-3">Kind</th>
-              <th className="px-4 py-3">Amount</th>
-              <th className="px-4 py-3">Purpose</th>
-              <th className="px-4 py-3">Stripe Ref</th>
-              <th className="px-4 py-3 text-right">Running Balance</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {sorted.map((r) => {
-              const signed = r.kind === "charge" ? -r.amount_cents : r.kind === "payout" ? r.amount_cents : 0;
-              const display = Math.abs(r.amount_cents);
-              return (
-                <tr key={`${r.run_id}-${r.ts}-${r.stripe_ref}`}>
-                  <td className="px-4 py-3 whitespace-nowrap text-gray-900">
-                    <time dateTime={r.ts}>{fmtTs(r.ts)}</time>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${KIND_STYLES[r.kind].bg} ${KIND_STYLES[r.kind].text}`}>
-                      {KIND_STYLES[r.kind].symbol} {r.kind}
-                    </span>
-                  </td>
-                  <td className={`px-4 py-3 font-medium ${signed < 0 ? "text-red-600" : "text-emerald-600"}`}>
-                    {signed < 0 ? "−" : "+"}{fmtCents(display, r.currency)}
-                  </td>
-                  <td className="px-4 py-3 text-gray-800">{r.purpose}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-gray-500">{truncateRef(r.stripe_ref)}</td>
-                  <td className="px-4 py-3 text-right font-semibold text-gray-900">
-                    {fmtCents(r.balance_after_cents, r.currency)}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
-export default function ReceiptsPage({ params }: { params: { id: string } }) {
-  const [receipts, setReceipts] = useState<Receipt[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-    (async () => {
-      try {
-        const res = await fetch(`/api/runs/${encodeURIComponent(params.id)}/receipts`);
-        if (res.ok) {
-          const data: Receipt[] = await res.json();
-          if (!cancelled) {
-            setReceipts(data);
-          }
-        } else {
-          throw new Error("Failed to load receipts");
-        }
-      } catch (err: any) {
-        if (!cancelled) {
-          setError(err?.message ?? "Failed to load receipts");
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [params.id]);
-
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-gray-50 p-6 md:p-8">
-        <div className="mx-auto max-w-6xl">Loading receipts…</div>
-      </main>
-    );
-  }
-
-  if (error) {
-    return (
-      <main className="min-h-screen bg-gray-50 p-6 md:p-8">
-        <div className="mx-auto max-w-6xl">
-          <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-700">{error}</div>
+      <main className="min-h-screen bg-gray-950 p-6 text-gray-100">
+        <div className="mx-auto max-w-4xl rounded-2xl border border-red-500/30 bg-red-500/10 p-8 text-center">
+          <p className="text-lg font-semibold text-red-200">Run not found</p>
+          <Link href="/leaderboard" className="mt-4 inline-flex text-sm text-red-100 underline">
+            Return to leaderboard
+          </Link>
         </div>
       </main>
     );
   }
 
-  const sorted = [...receipts].sort(
-    (a, b) => new Date(b.ts).getTime() - new Date(a.ts).getTime()
-  );
+  const currency = run.wallet.currency;
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6 md:p-8">
-      <div className="mx-auto max-w-6xl">
-        <Link
-          href={`/runs/${params.id}`}
-          className="text-sm text-indigo-600 hover:underline"
-        >
-          ← Back to run
-        </Link>
-
-        <div className="mt-4">
-          <h1 className="text-3xl font-bold text-gray-900 lg:text-4xl">Receipts</h1>
-          <p className="mt-1 text-sm text-gray-500">{params.id}</p>
-        </div>
-
-        <section className="mt-6">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Cards</h2>
-          {sorted.length === 0 ? (
-            <p className="mt-2 text-sm text-gray-500">No receipts for this run.</p>
-          ) : (
-            <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {sorted.map((r, idx) => (
-                <ReceiptCard key={`${r.stripe_ref}-${idx}`} receipt={r} />
-              ))}
+    <main className="min-h-screen bg-gray-950 p-4 text-gray-100 md:p-8">
+      <div className="mx-auto max-w-6xl space-y-6">
+        <div className="flex flex-col gap-4 rounded-3xl border border-gray-800 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.18),_transparent_34%),#111827] p-6 shadow-2xl md:flex-row md:items-end md:justify-between">
+          <div>
+            <Link
+              href={`/runs/${run.id}`}
+              className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-gray-300 transition hover:text-white"
+            >
+              <ArrowLeft className="h-4 w-4" /> Back to trace
+            </Link>
+            <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.3em] text-emerald-300">
+              <span>Run receipts</span>
+              <span className="rounded-full border border-emerald-400/30 px-2 py-1 tracking-normal text-emerald-100">
+                {run.live ? "live wallet" : "replay wallet"}
+              </span>
             </div>
-          )}
+            <h1 className="mt-3 text-3xl font-black tracking-tight text-white md:text-5xl">
+              {model.challenge?.title ?? run.challenge_id}
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm text-gray-300 md:text-base">
+              Ledger and Stripe-test receipt trail for {model.contestant?.name ?? run.contestant_id} on {run.id}.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-emerald-400/30 bg-emerald-400/10 p-4 text-right">
+            <div className="text-xs uppercase tracking-[0.2em] text-emerald-200">Wallet balance</div>
+            <div className="mt-1 text-3xl font-black text-emerald-100">
+              {formatCents(model.finalBalance, currency)}
+            </div>
+            <div className="text-xs text-emerald-200/80">
+              Start {formatCents(run.wallet.start_cents, currency)} · Net {model.netDelta >= 0 ? "+" : ""}
+              {formatCents(model.netDelta, currency)}
+            </div>
+          </div>
+        </div>
+
+        <section className="grid gap-4 md:grid-cols-4">
+          <div className="rounded-2xl border border-gray-800 bg-gray-900/80 p-5">
+            <Wallet className="mb-3 h-5 w-5 text-gray-400" />
+            <div className="text-xs uppercase tracking-wide text-gray-500">Starting budget</div>
+            <div className="mt-1 text-2xl font-bold text-white">{formatCents(run.wallet.start_cents, currency)}</div>
+          </div>
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-5">
+            <CreditCard className="mb-3 h-5 w-5 text-red-300" />
+            <div className="text-xs uppercase tracking-wide text-red-200/80">Charges</div>
+            <div className="mt-1 text-2xl font-bold text-red-100">{formatCents(model.totalCharges, currency)}</div>
+          </div>
+          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-5">
+            <BadgeDollarSign className="mb-3 h-5 w-5 text-emerald-300" />
+            <div className="text-xs uppercase tracking-wide text-emerald-200/80">Payouts / refunds</div>
+            <div className="mt-1 text-2xl font-bold text-emerald-100">{formatCents(model.totalCredits, currency)}</div>
+          </div>
+          <div className="rounded-2xl border border-indigo-500/20 bg-indigo-500/10 p-5">
+            <ReceiptText className="mb-3 h-5 w-5 text-indigo-300" />
+            <div className="text-xs uppercase tracking-wide text-indigo-200/80">Receipts</div>
+            <div className="mt-1 text-2xl font-bold text-indigo-100">{model.receipts.length}</div>
+          </div>
         </section>
 
-        <section className="mt-8">
-          <BurnChart receipts={sorted} />
+        <section className="rounded-3xl border border-gray-800 bg-gray-900/80 p-5 shadow-xl">
+          <div className="mb-4 flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 className="flex items-center gap-2 text-xl font-bold text-white">
+                <TrendingUp className="h-5 w-5 text-emerald-300" /> Burn chart
+              </h2>
+              <p className="text-sm text-gray-400">Running wallet balance after each Stripe-test transaction.</p>
+            </div>
+            <span className="text-xs uppercase tracking-[0.2em] text-gray-500">Recharts</span>
+          </div>
+          <div className="h-72 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={model.burnData} margin={{ left: 4, right: 12, top: 8, bottom: 8 }}>
+                <defs>
+                  <linearGradient id="walletBalance" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#34d399" stopOpacity={0.55} />
+                    <stop offset="95%" stopColor="#34d399" stopOpacity={0.04} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid stroke="#1f2937" strokeDasharray="3 3" />
+                <XAxis dataKey="label" stroke="#9ca3af" tick={{ fill: "#9ca3af", fontSize: 12 }} />
+                <YAxis
+                  stroke="#9ca3af"
+                  tick={{ fill: "#9ca3af", fontSize: 12 }}
+                  tickFormatter={(value) => `$${Number(value / 100).toFixed(0)}`}
+                />
+                <Tooltip
+                  content={({ active, payload, label }) => {
+                    if (!active || !payload || !payload.length) return null;
+                    const item = payload[0].payload as {
+                      label: string;
+                      ts: string;
+                      balance: number;
+                      delta: number;
+                      purpose: string;
+                    };
+                    return (
+                      <div className="rounded-xl border border-gray-700 bg-gray-950 p-3 shadow-xl">
+                        <div className="text-xs text-gray-400">{item.label}</div>
+                        <div className="mt-1 text-sm font-bold text-white">{formatCents(item.balance, currency)}</div>
+                        {item.delta !== 0 && (
+                          <div className={`mt-1 text-xs font-mono ${item.delta < 0 ? "text-red-300" : "text-emerald-300"}`}>
+                            {item.delta >= 0 ? "+" : "−"}
+                            {formatCents(Math.abs(item.delta), currency)} · {item.purpose}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }}
+                />
+                <ReferenceLine y={run.wallet.start_cents} stroke="#6366f1" strokeDasharray="4 4" />
+                <Area type="monotone" dataKey="balance" stroke="#34d399" strokeWidth={3} fill="url(#walletBalance)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
         </section>
 
-        <section className="mt-8">
-          <LedgerTable receipts={sorted} />
+        <section className="grid gap-6 lg:grid-cols-[1fr_1.15fr]">
+          <div className="rounded-3xl border border-gray-800 bg-gray-900/80 p-5">
+            <h2 className="mb-4 text-xl font-bold text-white">Receipt cards</h2>
+            <div className="space-y-3">
+              {model.receipts.map((receipt) => {
+                const delta = signedAmount(receipt);
+                return (
+                  <article key={`${receipt.ts}-${receipt.stripe_ref}`} className={`rounded-2xl border p-4 ${KIND_STYLES[receipt.kind]}`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="inline-flex items-center gap-1 rounded-full border border-current px-2 py-0.5 text-xs font-bold">
+                          <span>{KIND_SYMBOL[receipt.kind]}</span>
+                          <span className="uppercase tracking-wider">{receipt.kind}</span>
+                        </div>
+                        <h3 className="mt-2 font-semibold text-white">{receipt.purpose}</h3>
+                      </div>
+                      <div className="text-right text-lg font-black">
+                        {delta >= 0 ? "+" : "−"}
+                        {formatCents(Math.abs(delta), receipt.currency)}
+                      </div>
+                    </div>
+                    <div className="mt-4 grid gap-2 text-xs text-gray-300 md:grid-cols-2">
+                      <span>{formatTime(receipt.ts)} · {new Date(receipt.ts).toLocaleDateString()}</span>
+                      <span className="font-mono text-gray-400 md:text-right" title={receipt.stripe_ref}>
+                        {receipt.stripe_ref.length > 12 ? receipt.stripe_ref.slice(0, 12) + "…" : receipt.stripe_ref}
+                      </span>
+                      <span className="md:col-span-2">Balance after: {formatCents(receipt.balance_after_cents, receipt.currency)}</span>
+                    </div>
+                  </article>
+                );
+              })}
+              {model.receipts.length === 0 && <p className="text-sm text-gray-500">No receipts recorded for this run.</p>}
+            </div>
+          </div>
+
+          <div className="overflow-hidden rounded-3xl border border-gray-800 bg-gray-900/80">
+            <div className="border-b border-gray-800 p-5">
+              <h2 className="text-xl font-bold text-white">Ledger running balance</h2>
+              <p className="text-sm text-gray-400">Every row is derived from §10 Receipt fields for this run.</p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[680px] text-left text-sm">
+                <thead className="bg-gray-950/70 text-xs uppercase tracking-wide text-gray-500">
+                  <tr>
+                    <th className="px-4 py-3">Time</th>
+                    <th className="px-4 py-3">Kind</th>
+                    <th className="px-4 py-3">Purpose</th>
+                    <th className="px-4 py-3 text-right">Delta</th>
+                    <th className="px-4 py-3 text-right">Running balance</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-800">
+                  <tr className="text-gray-300">
+                    <td className="px-4 py-3">{formatTime(run.started_at)}</td>
+                    <td className="px-4 py-3">open</td>
+                    <td className="px-4 py-3">Wallet opened</td>
+                    <td className="px-4 py-3 text-right font-mono">—</td>
+                    <td className="px-4 py-3 text-right font-mono text-white">{formatCents(run.wallet.start_cents, currency)}</td>
+                  </tr>
+                  {model.receipts.map((receipt) => {
+                    const delta = signedAmount(receipt);
+                    return (
+                      <tr key={`ledger-${receipt.ts}-${receipt.stripe_ref}`} className="text-gray-300">
+                        <td className="px-4 py-3">{formatTime(receipt.ts)}</td>
+                        <td className="px-4 py-3 capitalize">{receipt.kind}</td>
+                        <td className="px-4 py-3">{receipt.purpose}</td>
+                        <td className={`px-4 py-3 text-right font-mono ${delta < 0 ? "text-red-300" : "text-emerald-300"}`}>
+                          {delta >= 0 ? "+" : "-"}
+                          {formatCents(Math.abs(delta), receipt.currency)}
+                        </td>
+                        <td className="px-4 py-3 text-right font-mono text-white">
+                          {formatCents(receipt.balance_after_cents, receipt.currency)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </section>
       </div>
     </main>
