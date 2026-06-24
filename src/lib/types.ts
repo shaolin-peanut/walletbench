@@ -34,6 +34,11 @@ export interface Challenge {
   time_limit_seconds: number;
   success_check: SuccessCheck;
   scoring_weights: ScoringWeights;
+  difficulty?: "easy" | "medium" | "hard";
+  prize_pool_cents?: number;
+  completion_count?: number;
+  participants?: number;
+  best_score?: number;
 }
 
 // 2. Contestant (§10.2)
@@ -151,6 +156,11 @@ export const ChallengeSchema = z.object({
   time_limit_seconds: z.number(),
   success_check: SuccessCheckSchema,
   scoring_weights: ScoringWeightsSchema,
+  difficulty: z.enum(["easy", "medium", "hard"]).optional(),
+  prize_pool_cents: z.number().optional(),
+  completion_count: z.number().optional(),
+  participants: z.number().optional(),
+  best_score: z.number().optional(),
 });
 
 export const ContestantSchema = z.object({

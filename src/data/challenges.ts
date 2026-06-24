@@ -12,6 +12,11 @@ export const challenges: Challenge[] = [
     time_limit_seconds: 1800,
     success_check: { type: "net_positive", params: {} },
     scoring_weights: { task_success: 0.3, roi: 0.3, cost: 0.1, quality: 0.1, time: 0.1, policy: 0.1 },
+    difficulty: "hard",
+    prize_pool_cents: 2500,
+    completion_count: 12,
+    participants: 47,
+    best_score: 0.92,
   },
   {
     id: "provision-saas-stack",
@@ -24,6 +29,11 @@ export const challenges: Challenge[] = [
     time_limit_seconds: 3600,
     success_check: { type: "service_up", params: { min_uptime_seconds: 60 } },
     scoring_weights: { task_success: 0.35, roi: 0.15, cost: 0.2, quality: 0.15, time: 0.1, policy: 0.05 },
+    difficulty: "medium",
+    prize_pool_cents: 5000,
+    completion_count: 8,
+    participants: 31,
+    best_score: 0.78,
   },
   {
     id: "run-an-eval",
@@ -36,6 +46,11 @@ export const challenges: Challenge[] = [
     time_limit_seconds: 7200,
     success_check: { type: "eval_complete", params: { min_models: 2 } },
     scoring_weights: { task_success: 0.3, roi: 0.1, cost: 0.25, quality: 0.2, time: 0.1, policy: 0.05 },
+    difficulty: "medium",
+    prize_pool_cents: 8000,
+    completion_count: 5,
+    participants: 22,
+    best_score: 0.71,
   },
   {
     id: "source-hardware-kit",
@@ -48,6 +63,11 @@ export const challenges: Challenge[] = [
     time_limit_seconds: 5400,
     success_check: { type: "parts_listed", params: { min_items: 5 } },
     scoring_weights: { task_success: 0.3, roi: 0.1, cost: 0.25, quality: 0.2, time: 0.1, policy: 0.05 },
+    difficulty: "hard",
+    prize_pool_cents: 10000,
+    completion_count: 3,
+    participants: 18,
+    best_score: 0.65,
   },
   {
     id: "launch-landing-page",
@@ -60,6 +80,11 @@ export const challenges: Challenge[] = [
     time_limit_seconds: 2400,
     success_check: { type: "checkout_hit", params: { min_payments: 1 } },
     scoring_weights: { task_success: 0.4, roi: 0.2, cost: 0.15, quality: 0.15, time: 0.05, policy: 0.05 },
+    difficulty: "medium",
+    prize_pool_cents: 3000,
+    completion_count: 9,
+    participants: 39,
+    best_score: 0.83,
   },
   {
     id: "reduce-cloud-bill",
@@ -72,8 +97,13 @@ export const challenges: Challenge[] = [
     time_limit_seconds: 1800,
     success_check: { type: "savings_achieved", params: { min_reduction_pct: 20 } },
     scoring_weights: { task_success: 0.35, roi: 0.15, cost: 0.2, quality: 0.15, time: 0.1, policy: 0.05 },
+    difficulty: "easy",
+    prize_pool_cents: 2000,
+    completion_count: 15,
+    participants: 52,
+    best_score: 0.88,
   },
-] as const;
+];
 
 // Runtime validation for the data module
 challenges.forEach((c) => ChallengeSchema.parse(c));

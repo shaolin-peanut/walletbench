@@ -485,6 +485,15 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
     return () => clearInterval(t);
   }, []);
 
+  const toggleExpand = (seq: number) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(seq)) next.delete(seq);
+      else next.add(seq);
+      return next;
+    });
+  };
+
   return (
     <main className="min-h-screen bg-[#030712] text-gray-100">
       {/* ---------- Full-width policy banner ---------- */}
@@ -947,12 +956,10 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-      {/* Receipt drawer instance */}
       <ReceiptDrawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         receipts={allReceipts}
-        run={run}
       />
     </main>
   );

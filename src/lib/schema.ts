@@ -12,9 +12,26 @@ export function initDb(db: Database.Database): void {
       policy TEXT NOT NULL,
       time_limit_seconds INTEGER NOT NULL,
       success_check TEXT NOT NULL,
-      scoring_weights TEXT NOT NULL
+      scoring_weights TEXT NOT NULL,
+      difficulty TEXT,
+      prize_pool_cents INTEGER,
+      completion_count INTEGER,
+      participants INTEGER,
+      best_score REAL
     )
   `);
+
+  // Migration: add columns if they don't exist (for existing DBs)
+  const challengeColumns = (db.prepare("PRAGMA table_info(challenges)").all() as any[]).map(c => c.name);
+  const challengeMigrations: string[] = [];
+  if (!challengeColumns.includes("difficulty")) challengeMigrations.push("ALTER TABLE challenges ADD COLUMN difficulty TEXT");
+  if (!challengeColumns.includes("prize_pool_cents")) challengeMigrations.push("ALTER TABLE challenges ADD COLUMN prize_pool_cents INTEGER");
+  if (!challengeColumns.includes("completion_count")) challengeMigrations.push("ALTER TABLE challenges ADD COLUMN completion_count INTEGER");
+  if (!challengeColumns.includes("participants")) challengeMigrations.push("ALTER TABLE challenges ADD COLUMN participants INTEGER");
+  if (!challengeColumns.includes("best_score")) challengeMigrations.push("ALTER TABLE challenges ADD COLUMN best_score REAL");
+  for (const migration of challengeMigrations) {
+    db.exec(migration);
+  }
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS contestants (

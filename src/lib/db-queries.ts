@@ -21,6 +21,11 @@ export function getChallenges(db: Database.Database): Challenge[] {
     time_limit_seconds: row.time_limit_seconds,
     success_check: JSON.parse(row.success_check),
     scoring_weights: JSON.parse(row.scoring_weights),
+    difficulty: row.difficulty ?? undefined,
+    prize_pool_cents: row.prize_pool_cents ?? undefined,
+    completion_count: row.completion_count ?? undefined,
+    participants: row.participants ?? undefined,
+    best_score: row.best_score ?? undefined,
   }));
 }
 
@@ -38,6 +43,11 @@ export function getChallengeById(db: Database.Database, id: string): Challenge |
     time_limit_seconds: row.time_limit_seconds,
     success_check: JSON.parse(row.success_check),
     scoring_weights: JSON.parse(row.scoring_weights),
+    difficulty: row.difficulty ?? undefined,
+    prize_pool_cents: row.prize_pool_cents ?? undefined,
+    completion_count: row.completion_count ?? undefined,
+    participants: row.participants ?? undefined,
+    best_score: row.best_score ?? undefined,
   };
 }
 

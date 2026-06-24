@@ -6,8 +6,8 @@ export function seedDb(db: Database.Database): void {
   const challengeCount = (db.prepare("SELECT COUNT(*) as c FROM challenges").get() as { c: number }).c;
   if (challengeCount === 0) {
     const insert = db.prepare(
-      `INSERT INTO challenges (id, title, goal, budget_cents, currency, allowed_tools, policy, time_limit_seconds, success_check, scoring_weights)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO challenges (id, title, goal, budget_cents, currency, allowed_tools, policy, time_limit_seconds, success_check, scoring_weights, difficulty, prize_pool_cents, completion_count, participants, best_score)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     );
     for (const c of challenges) {
       insert.run(
@@ -20,7 +20,12 @@ export function seedDb(db: Database.Database): void {
         JSON.stringify(c.policy),
         c.time_limit_seconds,
         JSON.stringify(c.success_check),
-        JSON.stringify(c.scoring_weights)
+        JSON.stringify(c.scoring_weights),
+        c.difficulty ?? null,
+        c.prize_pool_cents ?? null,
+        c.completion_count ?? null,
+        c.participants ?? null,
+        c.best_score ?? null,
       );
     }
   }
