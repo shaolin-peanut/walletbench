@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import type { Challenge } from "@/lib/types";
 import { Spinner } from "@/components/Spinner";
+import { Badge } from "@/components/ui/Badge";
 
 function fmtBudget(cents: number, currency: string) {
   return `${(cents / 100).toFixed(2)} ${currency.toUpperCase()}`;
@@ -13,9 +14,21 @@ function fmtTime(seconds: number) {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
   const s = seconds % 60;
-  if (h > 0) return `${h}h ${m}m ${s}s`;
+  if (h > 0) return `${h}h ${m > 0 ? `${m}m ` : ""}${s}s`;
   if (m > 0) return `${m}m ${s}s`;
   return `${s}s`;
+}
+
+function DifficultyDot({ difficulty }: { difficulty?: string }) {
+  if (!difficulty) return null;
+  const variant = difficulty === "easy" ? "green" : difficulty === "medium" ? "amber" : "red";
+  const label = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+  return (
+    <Badge variant={variant} className="gap-1.5">
+      <span className={`h-2 w-2 rounded-full bg-current`} />
+      {label}
+    </Badge>
+  );
 }
 
 function ScoringBar({ weights }: { weights: Challenge["scoring_weights"] }) {
@@ -24,14 +37,14 @@ function ScoringBar({ weights }: { weights: Challenge["scoring_weights"] }) {
     <div className="mt-3 space-y-1">
       {entries.map(([key, value]) => (
         <div key={key} className="flex items-center gap-2 text-xs">
-          <span className="w-24 text-gray-500 truncate">{key.replace(/_/g, " ")}</span>
-          <div className="h-2 flex-1 rounded-full bg-gray-800">
+          <span className="w-24 text-[var(--wb-muted)] truncate font-body">{key.replace(/_/g, " ")}</span>
+          <div className="h-2 flex-1 rounded-full bg-[var(--wb-border)]">
             <div
-              className="h-2 rounded-full bg-indigo-500"
+              className="h-2 rounded-full bg-[var(--wb-accent)]"
               style={{ width: `${Math.round(value * 100)}%` }}
             />
           </div>
-          <span className="w-8 text-right text-gray-400">{value.toFixed(2)}</span>
+          <span className="w-8 text-right text-[var(--wb-muted)] tabular-nums font-mono">{value.toFixed(2)}</span>
         </div>
       ))}
     </div>
@@ -50,16 +63,12 @@ export default function ChallengesPage() {
         const res = await fetch("/api/challenges");
         if (res.ok) {
           const data: Challenge[] = await res.json();
-          if (!cancelled) {
-            setChallenges(data);
-          }
+          if (!cancelled) setChallenges(data);
         }
       } catch {
-        // fail
+        // fail silently
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       }
     })();
     return () => {
@@ -69,25 +78,25 @@ export default function ChallengesPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-gray-950 text-gray-100 p-6 md:p-8">
+      <main className="flex min-h-screen items-center justify-center bg-[var(--wb-bg)] text-[var(--wb-text)] p-6 md:p-8">
         <div className="flex flex-col items-center gap-3">
           <Spinner className="h-8 w-8" />
-          <p className="text-sm text-gray-400">Loading challenges…</p>
+          <p className="text-sm text-[var(--wb-muted)]">Loading challenges…</p>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-950 text-gray-100 p-6 md:p-8">
-      <div className="mx-auto max-w-6xl">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-100">Challenges</h1>
-        <p className="mt-2 text-gray-400">
+    <main className="min-h-screen bg-[var(--wb-bg)] text-[var(--wb-text)] p-6 md:p-8">
+      <div className="mx-auto max-w-6xl wb-animate-enter">
+        <h1 className="text-display font-display font-bold tracking-tight text-[var(--wb-text)]">Challenges</h1>
+        <p className="mt-2 text-[var(--wb-muted)] font-body">
           Browse all evaluation challenges. Click a card to view the full spec.
         </p>
 
         {challenges.length === 0 ? (
-          <p className="mt-6 text-sm text-gray-500">No challenges available right now.</p>
+          <p className="mt-6 text-sm text-[var(--wb-muted)]">No challenges available right now.</p>
         ) : (
           <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {challenges.map((challenge) => {
@@ -96,44 +105,88 @@ export default function ChallengesPage() {
                 <Link
                   key={challenge.id}
                   href={`/challenges/${challenge.id}`}
-                  className={`relative block rounded-xl border bg-gray-900 p-5 shadow-sm transition hover:border-gray-600 hover:shadow-lg ${
-                    isFlagship
-                      ? "border-amber-500/50 bg-amber-500/5 p-6 lg:p-7"
-                      : "border-gray-800"
+                  className={`group relative block transition hover:scale-[1.01] ${
+                    isFlagship ? "md:col-span-2 lg:col-span-1" : ""
                   }`}
                 >
-                  {isFlagship && (
-                    <span className="absolute -top-3 right-4 rounded-full bg-amber-400 px-2.5 py-0.5 text-xs font-semibold text-amber-900">
-                      ★ FLAGSHIP
-                    </span>
-                  )}
+                  <div
+                    className={`relative wb-card overflow-hidden ${
+                      isFlagship
+                        ? "border-amber-500/40 bg-gradient-to-br from-amber-500/10 via-[var(--wb-surface)] to-[var(--wb-surface)]"
+                        : ""
+                    }`}
+                  >
+                    {isFlagship && (
+                      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 opacity-80" />
+                    )}
 
-                  <div className="space-y-3">
-                    <div>
-                      <h2 className={`font-semibold text-gray-100 ${isFlagship ? "text-2xl" : "text-xl"}`}>
-                        {challenge.title}
-                      </h2>
-                      <p className="text-xs text-gray-500">{challenge.id}</p>
+                    {isFlagship && (
+                      <div
+                        className="absolute -top-3 right-4 rounded-full px-3 py-1 text-xs font-bold text-amber-900 shadow-lg"
+                        style={{
+                          backgroundImage: "linear-gradient(135deg, #f59e0b, #f97316)",
+                          fontFamily: "var(--wb-font-display)",
+                        }}
+                      >
+                        ★ FLAGSHIP
+                      </div>
+                    )}
+
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="space-y-1">
+                        <h2
+                          className={`font-semibold text-[var(--wb-text)] ${
+                            isFlagship ? "text-heading font-display" : "text-xl font-display"
+                          }`}
+                        >
+                          {challenge.title}
+                        </h2>
+                        <p className="text-xs text-[var(--wb-muted)] font-mono">{challenge.id}</p>
+                      </div>
+                      <DifficultyDot difficulty={challenge.difficulty} />
                     </div>
 
-                    <p className="line-clamp-2 text-sm leading-relaxed text-gray-300">
+                    <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-[var(--wb-text)] font-body opacity-80">
                       {challenge.goal}
                     </p>
 
-                    <div className="flex flex-wrap gap-3 text-sm font-medium text-gray-200">
-                      <span className="rounded-md bg-gray-800 px-2.5 py-1">
-                        Budget: {fmtBudget(challenge.budget_cents, challenge.currency)}
-                      </span>
-                      <span className="rounded-md bg-gray-800 px-2.5 py-1">
-                        Time: {fmtTime(challenge.time_limit_seconds)}
-                      </span>
+                    <div className="mt-4 flex flex-wrap gap-3 text-sm font-medium font-mono tabular-nums">
+                      {challenge.prize_pool_cents != null && (
+                        <span className="rounded-md bg-[var(--wb-border)] px-2.5 py-1 text-[var(--wb-green)]">
+                          Prize: {fmtBudget(challenge.prize_pool_cents, challenge.currency)}
+                        </span>
+                      )}
+                      {challenge.completion_count != null && (
+                        <span className="rounded-md bg-[var(--wb-border)] px-2.5 py-1 text-[var(--wb-text)]">
+                          {challenge.completion_count} completed
+                        </span>
+                      )}
+                      {challenge.participants != null && (
+                        <span className="rounded-md bg-[var(--wb-border)] px-2.5 py-1 text-[var(--wb-text)]">
+                          {challenge.participants} entered
+                        </span>
+                      )}
+                      {challenge.participants == null && challenge.completion_count == null && (
+                        <span className="rounded-md bg-[var(--wb-border)] px-2.5 py-1 text-[var(--wb-text)]">
+                          {fmtTime(challenge.time_limit_seconds)}
+                        </span>
+                      )}
                     </div>
 
-                    <div className="flex flex-wrap gap-1.5">
+                    {challenge.best_score != null && (
+                      <div className="mt-3 text-sm font-mono tabular-nums">
+                        <span className="text-[var(--wb-muted)]">Best score: </span>
+                        <span className="font-semibold text-[var(--wb-amber)]">
+                          {(challenge.best_score * 100).toFixed(0)}%
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="mt-4 flex flex-wrap gap-1.5">
                       {challenge.allowed_tools.map((tool) => (
                         <span
                           key={tool}
-                          className="rounded-full bg-indigo-500/15 px-2.5 py-0.5 text-xs font-medium text-indigo-300"
+                          className="rounded-full bg-[var(--wb-bg-accent)] px-2.5 py-0.5 text-xs font-medium text-[var(--wb-accent-glow)]"
                         >
                           {tool}
                         </span>
