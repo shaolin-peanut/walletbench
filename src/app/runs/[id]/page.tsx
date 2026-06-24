@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { fixtures } from "@/lib/fixtures";
 import type { Run, TraceEvent, Receipt } from "@/lib/types";
 import { startReplay } from "@/lib/replay";
@@ -37,15 +36,14 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useMemo } from "react";
 
 // ---------- Aesthetic tokens ----------
 const SURFACE = "#0b1220";
 const CHROME = "#111827";
-const RED_BANNER = "#7f1d1d"; // red-900
-const RED_BORDER = "#b91c1c"; // red-700
-const GOLD = "#f59e0b"; // amber-500
-const EMERALD = "#34d399"; // emerald-400
+const RED_BANNER = "#7f1d1d";
+const RED_BORDER = "#b91c1c";
+const GOLD = "#f59e0b";
+const EMERALD = "#34d399";
 
 const TYPE_ICONS: Record<string, React.ReactNode> = {
   decision: <Brain className="h-3.5 w-3.5" />,
@@ -61,10 +59,10 @@ function relativeTime(ts: string): string {
   const diff = Date.now() - new Date(ts).getTime();
   const seconds = Math.floor(diff / 1000);
   if (seconds < 60) return `${seconds}s ago`;
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+  const minutes = Math.floor(diff / 60);
+  if (minutes < 60) return `${minutes}m${seconds % 60}s ago`;
   const hours = Math.floor(minutes / 60);
-  return `${hours}h ago`;
+  return `${hours}h${minutes % 60}m ago`;
 }
 
 function elapsedTime(
@@ -77,10 +75,33 @@ function elapsedTime(
   const diff = Math.max(0, end - start);
   const seconds = Math.floor(diff / 1000);
   if (seconds < 60) return `${seconds}s`;
-  const minutes = Math.floor(seconds / 60);
+  const minutes = Math.floor(diff / 60);
   if (minutes < 60) return `${minutes}m ${seconds % 60}s`;
   const hours = Math.floor(minutes / 60);
   return `${hours}h ${minutes % 60}m`;
+}
+
+function buildBalanceCurve(
+  events: TraceEvent[],
+  startBalance: number,
+  currency: string
+): { x: number; y: number; ts: string }[] {
+  const start = new Date(events[0]?.ts ?? new Date().toISOString()).getTime();
+  const end = new Date(events[events.length - 1]?.ts ?? start).getTime();
+  const points: { x: number; y: number; ts: string }[] = [
+    { x: 0, y: startBalance, ts: events[0]?.ts ?? new Date().toISOString() },
+  ];
+  let balance = startBalance;
+  for (const ev of events) {
+    if (ev.type === "spend" && ev.data.amount_cents) {
+      balance -= Math.abs(ev.data.amount_cents);
+    } else if (ev.type === "artifact" && ev.data.result && typeof (ev.data.result as any).payout === "number") {
+      balance += (ev.data.result as any).payout;
+    }
+    const t = new Date(ev.ts).getTime();
+    points.push({ x: t - start, y: balance, ts: ev.ts });
+  }
+  return points;
 }
 
 function formatCents(cents: number, currency: string): string {
@@ -94,127 +115,121 @@ function cn(...classes: (string | false | undefined | null)[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-// ---------- Drawer ----------
 function ReceiptDrawer({
+  receipts,
   open,
   onClose,
-  receipts,
-  run,
 }: {
+  receipts: Receipt[];
   open: boolean;
   onClose: () => void;
-  receipts: Receipt[];
-  run: Run;
 }) {
+  const [active, setActive] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!open) setActive(null);
+  }, [open]);
+
   if (!open) return null;
+  const selected = active ? receipts.find((r) => r.stripe_ref === active) : null;
+
+  const kindIcon = (kind: Receipt["kind"]) => {
+    if (kind === "charge") return <ArrowDownToLine className="h-4 w-4" />;
+    if (kind === "payout") return <ArrowUpFromLine className="h-4 w-4" />;
+    return <RotateCcw className="h-4 w-4" />;
+  };
+
+  const kindColor = (kind: Receipt["kind"]) => {
+    if (kind === "charge") return "text-amber-400 bg-amber-400/10 border-amber-500/30";
+    if (kind === "payout") return "text-emerald-400 bg-emerald-400/10 border-emerald-500/30";
+    return "text-red-400 bg-red-400/10 border-red-500/30";
+  };
+
   return (
-    <div className="fixed inset-0 z-50">
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      <aside className="absolute right-0 top-0 h-full w-full max-w-md border-l border-gray-800 bg-gray-950 shadow-2xl transition-transform">
-        <div className="flex items-center justify-between border-b border-gray-800 px-4 py-3">
-          <div className="flex items-center gap-2 text-sm font-semibold text-gray-200">
-            <FileText className="h-4 w-4 text-emerald-400" />
-            <span>Receipts</span>
-            <span className="rounded-full bg-gray-800 px-2 py-0.5 text-xs font-mono text-gray-400">
-              {receipts.length}
-            </span>
+    <div className="fixed inset-0 z-40">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <aside className="absolute right-0 top-0 h-full w-full max-w-xl border-l border-white/10 bg-[#141420] shadow-2xl flex flex-col animate-wb-fade-in-slide">
+        <header className="flex items-center justify-between border-b border-white/10 p-4">
+          <div className="flex items-center gap-2">
+            <FileText className="h-5 w-5 text-white/80" />
+            <h2 className="font-display text-lg font-semibold text-white">Receipts</h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md p-1 text-gray-500 transition hover:bg-gray-800 hover:text-gray-200"
+            className="rounded-md border border-white/10 px-3 py-1.5 text-xs font-medium text-white/80 hover:bg-white/10"
           >
-            <X className="h-4 w-4" />
+            Close
           </button>
+        </header>
+
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          {receipts.length === 0 && (
+            <p className="text-sm text-white/60">No receipts for this run.</p>
+          )}
+          {receipts.map((r) => (
+            <button
+              type="button"
+              key={r.stripe_ref}
+              onClick={() => setActive(r.stripe_ref)}
+              className={`w-full rounded-2xl border p-4 text-left transition hover:border-white/20 ${
+                active === r.stripe_ref ? "border-white/30" : "border-white/10"
+              } bg-white/[0.03]`}
+            >
+              <div className="flex items-center justify-between">
+                <div className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-xs font-semibold ${kindColor(r.kind)}`}>
+                  {kindIcon(r.kind)}
+                  <span className="uppercase tracking-wider">{r.kind}</span>
+                </div>
+                <span className="font-data text-xs text-white/60">{new Date(r.ts).toLocaleTimeString()}</span>
+              </div>
+              <div className="mt-2 flex items-baseline justify-between">
+                <span className="text-sm text-white/80">{r.purpose}</span>
+                <span className="font-data font-semibold text-white">
+                  {r.kind !== "payout" ? "-" : "+"}
+                  {formatCents(r.amount_cents, r.currency)}
+                </span>
+              </div>
+              <div className="mt-1 flex items-center justify-between text-xs text-white/50">
+                <span>Balance after</span>
+                <span>{formatCents(r.balance_after_cents, r.currency)}</span>
+              </div>
+            </button>
+          ))}
         </div>
 
-        <div className="max-h-[calc(100vh-56px)] space-y-3 overflow-y-auto p-4">
-          {receipts.length === 0 && (
-            <div className="py-10 text-center text-sm text-gray-500">
-              No transactions yet.
-            </div>
-          )}
-          {receipts.map((r) => {
-            const delta =
-              r.kind === "charge" ? -r.amount_cents : r.amount_cents;
-            return (
-              <div
-                key={`${r.ts}-${r.stripe_ref}`}
-                className="rounded-xl border border-gray-800 bg-gray-900 p-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={cn(
-                          "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium",
-                          r.kind === "charge"
-                            ? "border-red-200/80 bg-red-950 text-red-300"
-                            : r.kind === "payout"
-                            ? "border-emerald-200/80 bg-emerald-950 text-emerald-300"
-                            : "border-sky-200/80 bg-sky-950 text-sky-300"
-                        )}
-                      >
-                        {r.kind === "charge" && (
-                          <ArrowDownToLine className="h-3 w-3" />
-                        )}
-                        {r.kind === "payout" && (
-                          <ArrowUpFromLine className="h-3 w-3" />
-                        )}
-                        {r.kind === "refund" && (
-                          <RotateCcw className="h-3 w-3" />
-                        )}
-                        {r.kind}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {new Date(r.ts).toLocaleTimeString([], {
-                          hour12: false,
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                        })}
-                      </span>
-                    </div>
-                    <div className="text-sm text-gray-200">{r.purpose}</div>
-                    <div className="text-xs font-mono text-gray-500">
-                      {r.stripe_ref}
-                    </div>
-                  </div>
-                  <div
-                    className={cn(
-                      "text-right text-sm font-semibold",
-                      delta < 0 ? "text-red-400" : "text-emerald-400"
-                    )}
-                  >
-                    {delta >= 0 ? "+" : "−"}
-                    {formatCents(Math.abs(delta), r.currency)}
-                  </div>
+        {selected && (
+          <div className="border-t border-white/10 bg-white/[0.02] p-4">
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-white/60">Stripe Ref</span>
+                <span className="font-data text-xs text-white/80">{selected.stripe_ref}</span>
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-3 text-xs">
+                <div>
+                  <span className="text-white/60">Type</span>
+                  <div className="mt-1 font-medium text-white">{selected.kind.toUpperCase()}</div>
                 </div>
-
-                <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-gray-800">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-gray-700 to-gray-600"
-                    style={{
-                      width: `${Math.min(
-                        100,
-                        (r.balance_after_cents / run.wallet.start_cents) * 100
-                      )}%`,
-                    }}
-                  />
+                <div>
+                  <span className="text-white/60">Time</span>
+                  <div className="mt-1 font-medium text-white">{new Date(selected.ts).toLocaleString()}</div>
                 </div>
-                <div className="mt-1 flex items-center justify-between text-xs text-gray-500">
-                  <span>Balance after</span>
-                  <span className="font-semibold text-gray-300">
-                    {formatCents(r.balance_after_cents, r.currency)}
-                  </span>
+                <div>
+                  <span className="text-white/60">Amount</span>
+                  <div className="mt-1 font-medium text-white">{formatCents(selected.amount_cents, selected.currency)}</div>
+                </div>
+                <div>
+                  <span className="text-white/60">Balance after</span>
+                  <div className="mt-1 font-medium text-white">{formatCents(selected.balance_after_cents, selected.currency)}</div>
+                </div>
+                <div className="col-span-2">
+                  <span className="text-white/60">Purpose</span>
+                  <div className="mt-1 font-medium text-white">{selected.purpose}</div>
                 </div>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          </div>
+        )}
       </aside>
     </div>
   );
@@ -230,13 +245,14 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
   const [replayDone, setReplayDone] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
+
   const [now, setNow] = useState(Date.now());
-  const bottomRef = useRef<HTMLDivElement>(null);
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const controllerRef = useRef<ReturnType<typeof startReplay> | null>(null);
   const lastBalanceRef = useRef<number | null>(null);
   const [balanceTick, setBalanceTick] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   const challenge = run
     ? fixtures.challenges.find((c) => c.id === run.challenge_id)
@@ -458,15 +474,6 @@ export default function RunTracePage({ params }: { params: { id: string } }) {
       </div>
     );
   }
-
-  const toggleExpand = (seq: number) => {
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      if (next.has(seq)) next.delete(seq);
-      else next.add(seq);
-      return next;
-    });
-  };
 
   const displayBalance =
     balance !== null ? balance : run.wallet.balance_cents;
