@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { Challenge } from "@/lib/types";
 import { Spinner } from "@/components/Spinner";
 import { Badge } from "@/components/ui/Badge";
+import { Trophy, Users, Timer } from "lucide-react";
 
 function fmtBudget(cents: number, currency: string) {
   return `${(cents / 100).toFixed(2)} ${currency.toUpperCase()}`;
@@ -21,13 +22,27 @@ function fmtTime(seconds: number) {
 
 function DifficultyDot({ difficulty }: { difficulty?: string }) {
   if (!difficulty) return null;
-  const variant = difficulty === "easy" ? "green" : difficulty === "medium" ? "amber" : "red";
+  const isEasy = difficulty === "easy";
+  const isMedium = difficulty === "medium";
+  const isHard = difficulty === "hard";
   const label = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+  const colorVar = isEasy ? "var(--wb-green)" : isMedium ? "var(--wb-amber)" : "var(--wb-red)";
+  const bgVar = isEasy ? "var(--wb-bg-green)" : isMedium ? "var(--wb-bg-amber)" : "var(--wb-bg-red)";
   return (
-    <Badge variant={variant} className="gap-1.5">
-      <span className={`h-2 w-2 rounded-full bg-current`} />
+    <span
+      className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-bold uppercase tracking-wider"
+      style={{
+        color: colorVar,
+        backgroundColor: bgVar,
+        border: `1px solid ${colorVar}35`,
+      }}
+    >
+      <span className="relative flex h-2.5 w-2.5">
+        <span className="absolute inset-0 rounded-full opacity-60 blur-[3px]" style={{ backgroundColor: colorVar }} />
+        <span className="relative rounded-full" style={{ backgroundColor: colorVar }} />
+      </span>
       {label}
-    </Badge>
+    </span>
   );
 }
 
@@ -110,19 +125,19 @@ export default function ChallengesPage() {
                   }`}
                 >
                   <div
-                    className={`relative wb-card overflow-hidden ${
+                    className={`relative wb-card overflow-hidden transition-all duration-300 ${
                       isFlagship
-                        ? "border-amber-500/40 bg-gradient-to-br from-amber-500/10 via-[var(--wb-surface)] to-[var(--wb-surface)]"
-                        : ""
+                        ? "border-amber-500/60 bg-gradient-to-br from-amber-500/15 via-[var(--wb-surface)] to-[var(--wb-surface)] shadow-[0_0_30px_-10px_rgba(245,158,11,0.35)] hover:shadow-[0_0_45px_-8px_rgba(245,158,11,0.55)] hover:border-amber-500/80"
+                        : "hover:border-[var(--wb-border)]"
                     }`}
                   >
                     {isFlagship && (
-                      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 opacity-80" />
+                      <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 opacity-90" />
                     )}
 
                     {isFlagship && (
                       <div
-                        className="absolute -top-3 right-4 rounded-full px-3 py-1 text-xs font-bold text-amber-900 shadow-lg"
+                        className="absolute -top-3.5 right-4 rounded-full px-3.5 py-1.5 text-xs font-bold text-amber-900 shadow-lg shadow-amber-900/20 ring-1 ring-amber-500/50"
                         style={{
                           backgroundImage: "linear-gradient(135deg, #f59e0b, #f97316)",
                           fontFamily: "var(--wb-font-display)",
@@ -152,22 +167,26 @@ export default function ChallengesPage() {
 
                     <div className="mt-4 flex flex-wrap gap-3 text-sm font-medium font-mono tabular-nums">
                       {challenge.prize_pool_cents != null && (
-                        <span className="rounded-md bg-[var(--wb-border)] px-2.5 py-1 text-[var(--wb-green)]">
+                        <span className="inline-flex items-center gap-2 rounded-md bg-[var(--wb-border)] px-2.5 py-1 text-[var(--wb-green)]">
+                          <Trophy className="h-3.5 w-3.5" />
                           Prize: {fmtBudget(challenge.prize_pool_cents, challenge.currency)}
                         </span>
                       )}
                       {challenge.completion_count != null && (
-                        <span className="rounded-md bg-[var(--wb-border)] px-2.5 py-1 text-[var(--wb-text)]">
+                        <span className="inline-flex items-center gap-2 rounded-md bg-[var(--wb-border)] px-2.5 py-1 text-[var(--wb-text)]">
+                          <Users className="h-3.5 w-3.5" />
                           {challenge.completion_count} completed
                         </span>
                       )}
                       {challenge.participants != null && (
-                        <span className="rounded-md bg-[var(--wb-border)] px-2.5 py-1 text-[var(--wb-text)]">
+                        <span className="inline-flex items-center gap-2 rounded-md bg-[var(--wb-border)] px-2.5 py-1 text-[var(--wb-text)]">
+                          <Users className="h-3.5 w-3.5" />
                           {challenge.participants} entered
                         </span>
                       )}
                       {challenge.participants == null && challenge.completion_count == null && (
-                        <span className="rounded-md bg-[var(--wb-border)] px-2.5 py-1 text-[var(--wb-text)]">
+                        <span className="inline-flex items-center gap-2 rounded-md bg-[var(--wb-border)] px-2.5 py-1 text-[var(--wb-text)]">
+                          <Timer className="h-3.5 w-3.5" />
                           {fmtTime(challenge.time_limit_seconds)}
                         </span>
                       )}

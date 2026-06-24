@@ -3,7 +3,10 @@
     "http://localhost:3000/challenges",
     "http://localhost:3000/challenges/fund-yourself"
   ],
-  "screenshots": [],
+  "screenshots": [
+    "qa-screenshots/challenges-enhance.png",
+    "qa-screenshots/challenge-fund-yourself-enhance.png"
+  ],
   "build_result": {
     "command": "npm run build",
     "exit_status": "pass",
@@ -11,5 +14,5 @@
   },
   "console_errors": [],
   "runtime_errors": [],
-  "styling_verification": "Genuine UI output — code compiles and uses design-system tokens from globals.css. Screenshots could not be captured in this environment because Playwright's Chromium shell is missing system libraries (libnspr4.so). No asset degradation detected from code review."
+  "styling_verification": "Genuine UI output — design enhancements applied: difficulty badges with glow effects, flagship card with animated hover glow and expanded ribbon, icon-enhanced prize/completion/entrants stats on cards, and icon-accented policy constraint tag pills in challenge detail. Screenshots captured via Playwright Firefox. No asset degradation detected."
 }

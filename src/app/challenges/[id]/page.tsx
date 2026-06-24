@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Challenge } from "@/lib/types";
 import { Spinner } from "@/components/Spinner";
 import { Badge } from "@/components/ui/Badge";
+import { Lock, Shield, AlertTriangle, CheckCircle } from "lucide-react";
 
 function fmtBudget(cents: number, currency: string) {
   return `${(cents / 100).toFixed(2)} ${currency.toUpperCase()}`;
@@ -30,13 +31,27 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function DifficultyDot({ difficulty }: { difficulty?: string }) {
   if (!difficulty) return null;
-  const variant = difficulty === "easy" ? "green" : difficulty === "medium" ? "amber" : "red";
+  const isEasy = difficulty === "easy";
+  const isMedium = difficulty === "medium";
+  const isHard = difficulty === "hard";
   const label = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+  const colorVar = isEasy ? "var(--wb-green)" : isMedium ? "var(--wb-amber)" : "var(--wb-red)";
+  const bgVar = isEasy ? "var(--wb-bg-green)" : isMedium ? "var(--wb-bg-amber)" : "var(--wb-bg-red)";
   return (
-    <Badge variant={variant} className="gap-1.5">
-      <span className={`h-2 w-2 rounded-full bg-current`} />
+    <span
+      className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-bold uppercase tracking-wider"
+      style={{
+        color: colorVar,
+        backgroundColor: bgVar,
+        border: `1px solid ${colorVar}35`,
+      }}
+    >
+      <span className="relative flex h-2.5 w-2.5">
+        <span className="absolute inset-0 rounded-full opacity-60 blur-[3px]" style={{ backgroundColor: colorVar }} />
+        <span className="relative rounded-full" style={{ backgroundColor: colorVar }} />
+      </span>
       {label}
-    </Badge>
+    </span>
   );
 }
 
@@ -192,18 +207,29 @@ export default function ChallengeDetailPage({ params }: { params: { id: string }
 
         <Section title="Policy Constraints">
           <div className="flex flex-wrap gap-2">
-            <Badge variant="amber">Spend cap: {fmtBudget(challenge.policy.spend_cap_cents, challenge.currency)}</Badge>
-            <Badge variant="amber">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-300">
+              <Lock className="h-3 w-3" />
+              Spend cap: {fmtBudget(challenge.policy.spend_cap_cents, challenge.currency)}
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-300">
+              <Shield className="h-3 w-3" />
               Approval threshold: {fmtBudget(challenge.policy.approval_threshold_cents, challenge.currency)}
-            </Badge>
+            </span>
             {challenge.policy.forbidden_tools.length > 0 ? (
               challenge.policy.forbidden_tools.map((tool) => (
-                <Badge key={tool} variant="red">
+                <span
+                  key={tool}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-300"
+                >
+                  <AlertTriangle className="h-3 w-3" />
                   Forbidden: {tool}
-                </Badge>
+                </span>
               ))
             ) : (
-              <Badge variant="green">No forbidden tools</Badge>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-green-500/30 bg-green-500/10 px-3 py-1.5 text-xs font-semibold text-green-300">
+                <CheckCircle className="h-3 w-3" />
+                No forbidden tools
+              </span>
             )}
           </div>
         </Section>
