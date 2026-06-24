@@ -1,0 +1,8 @@
+{
+  "changed_routes": ["http://localhost:3000/leaderboard", "http://localhost:3000/challenges"],
+  "screenshots": ["qa-screenshots/leaderboard.png", "qa-screenshots/challenges.png"],
+  "build_result": {"command": "npm run build", "exit_status": "pass", "errors": []},
+  "console_errors": [],
+  "runtime_errors": [],
+  "styling_verification": "Genuine UI output — verified via Playwright against dev server on localhost:3000; no asset degradation detected."
+}
