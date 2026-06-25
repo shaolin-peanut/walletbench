@@ -1,171 +1,169 @@
-import Link from "next/link";
-import { fixtures } from "@/lib/fixtures";
-import {
-  Trophy,
-  Target,
-  ListChecks,
-  ReceiptText,
-  Activity,
-  PlayCircle,
-} from "lucide-react";
+"use client";
 
-const CARDS = [
-  {
-    href: "/leaderboard",
-    title: "Leaderboard",
-    description:
-      "Top contestants ranked by total rubric score across task success, ROI, quality, time, policy and auditability.",
-    icon: Trophy,
-    accent: "from-amber-500/20 to-amber-500/0 border-amber-500/30",
-    iconColor: "text-amber-300",
-  },
-  {
-    href: "/challenges",
-    title: "Challenges",
-    description:
-      "Browse the evaluation challenge pack — including the flagship Fund Yourself challenge — with budgets, tools and policies.",
-    icon: Target,
-    accent: "from-indigo-500/20 to-indigo-500/0 border-indigo-500/30",
-    iconColor: "text-indigo-300",
-  },
-  {
-    href: "/runs",
-    title: "Runs",
-    description:
-      "Inspect every contestant run — live and historic — with streaming traces, wallet burn charts and Stripe-test receipts.",
-    icon: ListChecks,
-    accent: "from-emerald-500/20 to-emerald-500/0 border-emerald-500/30",
-    iconColor: "text-emerald-300",
-  },
-  {
-    href: "/trace",
-    title: "Trace Timeline",
-    description:
-      "Streaming per-agent log with deterministic replay — decisions, tool calls, spends, artifacts and policy violations.",
-    icon: Activity,
-    accent: "from-sky-500/20 to-sky-500/0 border-sky-500/30",
-    iconColor: "text-sky-300",
-  },
-  {
-    href: "/receipts",
-    title: "Receipts",
-    description:
-      "Line-item financial record per contestant, sourced from Stripe-test mode receipts and §10 ledger contracts.",
-    icon: ReceiptText,
-    accent: "from-purple-500/20 to-purple-500/0 border-purple-500/30",
-    iconColor: "text-purple-300",
-  },
-  {
-    href: "/demo",
-    title: "Demo",
-    description:
-      "High-contrast restaged screencap mode — leaderboard, trace and receipts on a single page with no debug chrome.",
-    icon: PlayCircle,
-    accent: "from-rose-500/20 to-rose-500/0 border-rose-500/30",
-    iconColor: "text-rose-300",
-  },
-];
+import { useEffect, useState, useMemo } from "react";
+import { Contestant, Run } from "@/lib/types";
+
+function formatMoney(cents: number, currency: string): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+  }).format(cents / 100);
+}
+
+function relativeTime(ts: string): string {
+  const seconds = Math.floor((Date.now() - new Date(ts).getTime()) / 1000);
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  return `${Math.floor(minutes / 60)}h ago`;
+}
 
 export default function Home() {
-  const runCount = fixtures.runs.length;
-  const challengeCount = fixtures.challenges.length;
-  const contestantCount = fixtures.contestants.length;
+  const [contestants, setContestants] = useState<Contestant[]>([]);
+  const [runs, setRuns] = useState<Run[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const [cRes, rRes] = await Promise.all([
+          fetch("/api/contestants"),
+          fetch("/api/runs"),
+        ]);
+        const cData = cRes.ok ? await cRes.json() : [];
+        const rData = rRes.ok ? await rRes.json() : [];
+        if (!cancelled) {
+          setContestants(cData);
+          setRuns(rData);
+        }
+      } catch {
+        // keep empty state
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const latestRunsByContestant = useMemo(() => {
+    const map = new Map<string, Run>();
+    for (const run of runs) {
+      const existing = map.get(run.contestant_id);
+      if (!existing || new Date(run.started_at) > new Date(existing.started_at)) {
+        map.set(run.contestant_id, run);
+      }
+    }
+    return map;
+  }, [runs]);
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-gray-950 text-gray-100 flex items-center justify-center">
+        <div className="text-white/60">Loading…</div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-gray-950 text-gray-100">
-      {/* Hero */}
-      <section className="border-b border-gray-800 bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.18),_transparent_45%),#030712]">
-        <div className="mx-auto max-w-5xl px-4 py-16 md:px-8 md:py-24">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-indigo-300">
-            Economic evaluation for autonomous agents
-          </p>
-          <h1 className="mt-3 text-4xl font-black tracking-tight md:text-6xl">
+      <section className="relative overflow-hidden border-b border-white/10 bg-white/[0.02]">
+        <div className="mx-auto max-w-6xl px-4 py-16 md:px-8 md:py-24">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white">
             WalletBench
           </h1>
-          <p className="mt-4 max-w-2xl text-lg text-gray-300">
-            Benchmark how autonomous agents spend money, hold a budget, and
-            navigate policy — captured against Stripe-test-mode wallets with
-            deterministic replay and rubric scoring.
+          <p className="mt-4 text-lg md:text-xl text-white/60">
+            Economic evaluation layer for autonomous agents
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href="/leaderboard"
-              className="inline-flex items-center rounded-lg bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-400"
-            >
-              View leaderboard
-            </Link>
-            <Link
-              href="/challenges"
-              className="inline-flex items-center rounded-lg border border-gray-700 bg-gray-900 px-5 py-2.5 text-sm font-semibold text-gray-200 transition hover:border-gray-600 hover:bg-gray-800"
-            >
-              Browse challenges
-            </Link>
-          </div>
-
-          <dl className="mt-12 grid grid-cols-3 gap-4 max-w-md">
-            <div>
-              <dt className="text-xs uppercase tracking-wide text-gray-500">
-                Challenges
-              </dt>
-              <dd className="mt-1 text-2xl font-bold text-white">
-                {challengeCount}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-xs uppercase tracking-wide text-gray-500">
-                Runs
-              </dt>
-              <dd className="mt-1 text-2xl font-bold text-white">{runCount}</dd>
-            </div>
-            <div>
-              <dt className="text-xs uppercase tracking-wide text-gray-500">
-                Contestants
-              </dt>
-              <dd className="mt-1 text-2xl font-bold text-white">
-                {contestantCount}
-              </dd>
-            </div>
-          </dl>
+          <p className="mt-2 text-sm text-white/40">
+            Live contestant wallet balances from the current run pack
+          </p>
         </div>
       </section>
 
-      {/* Navigation cards */}
-      <section className="mx-auto max-w-5xl px-4 py-12 md:px-8">
-        <h2 className="text-xl font-semibold text-gray-200">
-          Explore the bench
-        </h2>
-        <p className="mt-1 text-sm text-gray-400">
-          Jump straight into any section of the surface.
-        </p>
-
-        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {CARDS.map((card) => {
-            const Icon = card.icon;
+      <section className="mx-auto max-w-6xl px-4 py-8 md:px-8 md:py-12">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {contestants.map((contestant) => {
+            const run = latestRunsByContestant.get(contestant.id);
             return (
-              <Link
-                key={card.href}
-                href={card.href}
-                className={`group relative overflow-hidden rounded-2xl border bg-gradient-to-br ${card.accent} bg-gray-900 p-5 transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-gray-950/50`}
+              <div
+                key={contestant.id}
+                className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition hover:border-white/20"
               >
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gray-950/60 ${card.iconColor}`}
-                  >
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <h3 className="text-lg font-semibold text-white">
-                    {card.title}
-                  </h3>
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <h2 className="font-display text-lg font-semibold text-white">
+                      {contestant.name}
+                    </h2>
+                    <p className="text-xs text-white/50 font-mono">
+                      {run?.id ?? "no-run"}
+                    </p>
+                    <p className="text-xs text-white/40">
+                      Started {run ? relativeTime(run.started_at) : "—"}
+                    </p>
+                  </div>
+                  {run && run.live && run.status === "running" ? (
+                    <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-emerald-300">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                      </span>
+                      <span className="text-xs font-semibold">LIVE</span>
+                    </span>
+                  ) : (
+                    <span className="rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-1 text-xs font-semibold text-white/50 uppercase">
+                      {run?.status ?? "idle"}
+                    </span>
+                  )}
                 </div>
-                <p className="mt-3 text-sm leading-relaxed text-gray-300">
-                  {card.description}
-                </p>
-                <span className="mt-4 inline-block text-xs font-semibold text-gray-200 transition group-hover:translate-x-0.5">
-                  Open →
-                </span>
-              </Link>
+
+                <div className="mt-4 flex items-baseline gap-2">
+                  <span className="font-data text-2xl font-bold tracking-tighter text-white">
+                    {run ? formatMoney(run.wallet.balance_cents, run.wallet.currency) : "—"}
+                  </span>
+                  {run && (
+                    <span className="text-xs text-white/40">
+                      / {formatMoney(run.wallet.start_cents, run.wallet.currency)}
+                    </span>
+                  )}
+                </div>
+
+                <div className="mt-2 h-1.5 rounded-full bg-white/10">
+                  {run && (
+                    <div
+                      className="h-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all"
+                      style={{
+                        width: `${Math.max(
+                          0,
+                          Math.min(
+                            100,
+                            (run.wallet.balance_cents / run.wallet.start_cents) * 100
+                          )
+                        )}%`,
+                      }}
+                    />
+                  )}
+                </div>
+
+                <div className="mt-3">
+                  <a
+                    href={`/runs/${encodeURIComponent(run?.id ?? "")}`}
+                    className="text-xs font-medium text-indigo-400 hover:text-indigo-300"
+                  >
+                    View run →
+                  </a>
+                </div>
+              </div>
             );
           })}
+
+          {contestants.length === 0 && (
+            <div className="col-span-full rounded-2xl border border-white/10 bg-white/[0.03] p-6 text-center text-white/50">
+              No contestants found
+            </div>
+          )}
         </div>
       </section>
     </main>
